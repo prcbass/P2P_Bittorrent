@@ -1,5 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.*;
 
 public class Config
@@ -24,7 +26,7 @@ public class Config
         cfg.close();
     }
 
-    ArrayList<Peer> initPeers(String peerInfoFile, int peerId) throws FileNotFoundException
+    ArrayList<Peer> initPeers(String peerInfoFile, int peerId) throws FileNotFoundException, UnknownHostException, IOException
     {
         ArrayList<Peer> peers = new ArrayList<Peer>();
         Scanner peerInfo = new Scanner(new FileReader(peerInfoFile));
@@ -36,9 +38,6 @@ public class Config
             int port = Integer.parseInt(line[2]);
             boolean hasFile = line[3].trim().equals("1");
 
-            // don't add our client to the peer list (no need to send anything to ourselves)
-            if (id == peerId)
-                continue;
             peers.add(new Peer(id, hostname, port, hasFile));
         }
         peerInfo.close();
