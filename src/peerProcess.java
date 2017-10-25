@@ -7,6 +7,16 @@ import java.util.*;
 class peerProcess
 {
 
+    private static Config config;
+    private static ArrayList<Peer> peers;
+
+    static int getPeerIndexFromId(int peerId)
+    {
+        for (int i = 0; i < peers.size(); i++)
+            if (peers.get(i).GetId() == peerId)
+                return i;
+        return -1;
+    }
     public static void main(String[] args) throws IOException, ClassNotFoundException
     {
         if (args.length < 1)
@@ -18,8 +28,6 @@ class peerProcess
         int peerId = Integer.parseInt(args[0]);
 
         // load Common.cfg
-        Config config;
-        ArrayList<Peer> peers;
         try
         {
            config = new Config("Common.cfg");
@@ -71,18 +79,27 @@ class peerProcess
                 byteStream.write(buff, 0, read);
             byteStream.flush();
             byte[] bytes = byteStream.toByteArray();
-            System.out.println(bytes.length);
             // see if response is a message or a handshake
+            System.out.println(new String(Arrays.copyOfRange(bytes, 0, 18)));
             if (bytes.length == 32 && 
-                new String(Arrays.copyOfRange(bytes, 0, 27)).equals("P2PFILESHARINGPROJ"))
+                new String(Arrays.copyOfRange(bytes, 0, 18)).equals("P2PFILESHARINGPROJ"))
             {
+                System.out.println("Got handshake");
                 // this is a handshake meant for us
                 if (ByteBuffer.wrap(Arrays.copyOfRange(bytes, 28, 32)).getInt() == peerId)
                 {
+                    int peerIndex = getPeerIndexFromId(peerId);
                     // if we sent a handshake already and just received one, send a bitfield message
-                    if (peers.get(peers.indexOf(peerId)).HasSentHandshake())
+                    if (peers.get(peerIndex).HasSentHandshake())
                     {
                         System.out.println("We should senda bitfield msg here.");
+                    }
+                    else
+                    {
+                        peers.get(peerIndex).OpenSocket();
+                        HandshakeMessage handshake = new HandshakeMessage(peerId);
+                        handshake.send(peers.get(peerIndex).GetSocket());
+                        peers.get(peerIndex).SetSentHandshake(true);
                     }
 
                 }
