@@ -72,9 +72,4 @@ public class Peer
     {
         return String.format("Peer %d: %s:%d %s", id, hostname, port, hasFile ? "Has file" : "No file");
     }
-
-    public boolean equals(Object peerId)
-    {
-        return this.id == (Integer)peerId;
-    }
 }
