@@ -24,11 +24,12 @@ public class HandshakeMessage
 	{
 		DataOutputStream data = new DataOutputStream(sock.getOutputStream());
 		data.writeBytes(header);
-		byte[] zeroBytes = new byte[10];
-		data.write(zeroBytes, 18, 10);
+		data.writeLong(0);
+		data.writeShort(0);
 		data.writeInt(ID);
 		System.out.println("Created handshake message of size " + data.size());
 		data.flush();
+		data.close();
 	}
 	
 	public int getID() 
