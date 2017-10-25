@@ -1,9 +1,12 @@
+import java.net.Socket;
+
 public class Peer
 {
     private final int id;
     private final String hostname;
     private final int port;
     private boolean hasFile;
+    private Socket socket;
 
     Peer(int id, String hostname, int port, boolean hasFile)
     {
@@ -11,6 +14,7 @@ public class Peer
         this.hostname = hostname;
         this.port = port;
         this.hasFile = hasFile;
+        this.socket = new Socket(hostname, port);
     }
 
     public int GetId()
@@ -31,6 +35,11 @@ public class Peer
     public boolean HasFile()
     {
         return hasFile;
+    }
+
+    public Socket GetSocket()
+    {
+        return socket;
     }
 
     public void SetHasFile(boolean hasFile)

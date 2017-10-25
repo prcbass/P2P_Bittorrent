@@ -1,3 +1,4 @@
+import java.net.Socket;
 
 public class HandshakeMessage {
 	private final static String header = "P2PFILESHARINGPROJ";
@@ -11,8 +12,15 @@ public class HandshakeMessage {
 		
 	}
 	
-	public void send() {
-		
+	// create and send a handshake message
+	public void send(Socket sock) {
+		DataOutputStream data = new DataOutputStream(sock.getOutputStream());
+		data.writeBytes(header);
+		byte[] zeroBytes = new byte[10];
+		data.write(zeroBytes, 18, 10);
+		data.writeInt(ID);
+		System.out.println("Created handshake message of size " + data.size());
+		data.flush();
 	}
 	
 	public int getID() {

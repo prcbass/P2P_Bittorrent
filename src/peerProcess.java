@@ -26,6 +26,7 @@ class peerProcess
             return;
         }
 
+        // create peer objects and open a socket for each one
         try
         {
             peers = config.initPeers("peerInfo.cfg", peerId);
@@ -37,17 +38,22 @@ class peerProcess
             return;
         }
 
+        // send a handshake message to all peers before us
         for (Peer p : peers)
         {
-            System.out.println(p);
+            if (p.GetId() == peerId)
+                break;
+                
+            HandshakeMessage handshake = new HandshakeMessage(p.GetSocket(), p.GetId());
+            handshake.send();
         }
-
-        // send out initial requests
 
         // wait for responses and react accordingly
         while (true)
         {
+            // handles recieved packets
 
+            // send data to best peer
         }
     }
 }
