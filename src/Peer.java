@@ -12,6 +12,7 @@ public class Peer
     private boolean hasFile;
     private Socket socket;
     private boolean sentHandshake; //true if this instance has sent a handshake to the peer
+    private Bitfield bitfield;
 
     Peer(int id, String hostname, int port, boolean hasFile) throws UnknownHostException, IOException
     {
