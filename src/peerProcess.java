@@ -1,6 +1,5 @@
 import java.net.*;
 import java.io.*;
-import java.nio.*;
 import java.util.*;
 
 class peerProcess
@@ -67,15 +66,7 @@ class peerProcess
         {
             // contains Data field of the most recently received TCP packet
             InputStream response = new DataInputStream(listener.accept().getInputStream());
-
-            // convert inputstream to byte array
-            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            byte[] buff = new byte[1024];
-            int read = 0;
-            while ((read = response.read(buff, 0, buff.length)) != -1)
-                byteStream.write(buff, 0, read);
-            byteStream.flush();
-            byte[] bytes = byteStream.toByteArray();
+            byte[] packetBytes = Utility.inputStreamToByteArray(response);
 
             // see if response is a message or a handshake
             System.out.println(new String(Arrays.copyOfRange(packetBytes, 0, 18)));
@@ -85,7 +76,7 @@ class peerProcess
                 System.out.println("Got handshake");
 
                 // this is a handshake meant for us
-                int peerId = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 28, 32)).getInt();
+                int peerId = Utility.byteArrayToInt(Arrays.copyOfRange(packetBytes, 28, 32));
                 if (peerId == myPeerId)
                 {
                     // if we sent a handshake already and just received one, send a bitfield message
@@ -96,7 +87,7 @@ class peerProcess
                     else
                     {
                         config.peers.get(peerId).OpenSocket();
-                        HandshakeMessage handshake = new HandshakeMessage(myPeerId);
+                        HandshakeMessage handshake = new HandshakeMessage(peerId);
                         handshake.send(config.peers.get(peerId).GetSocket());
                         config.peers.get(peerId).SetSentHandshake(true);
                     }
