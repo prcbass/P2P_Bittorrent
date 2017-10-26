@@ -4,8 +4,10 @@ import java.util.*;
 
 class peerProcess
 {
-
     private static Config config;
+
+    // this is a hack caused by the fact that handshake MSGs only contain 1 peerID - the peer we want to connect to.
+    private static ArrayList<String> handshakeHosts = new ArrayList<String>();
 
     public static void main(String[] args) throws IOException, ClassNotFoundException
     {
@@ -58,14 +60,19 @@ class peerProcess
             config.peers.get(peerId).OpenSocket();
             HandshakeMessage handshake = new HandshakeMessage(peerId);
             handshake.send(config.peers.get(peerId).GetSocket());
-            config.peers.get(peerId).SetSentHandshake(true);
+
+            // keep track of who we have already sent a handshake message to
+            //config.peers.get(peerId).SetSentHandshake(true);
+            handshakeHosts.add(config.peers.get(peerId).GetHostname());
         }
 
         // wait for responses and react accordingly
         while (true)
         {
-            // contains Data field of the most recently received TCP packet
-            InputStream response = new DataInputStream(listener.accept().getInputStream());
+            Socket acceptedSocket = listener.accept();
+            // contains Data field of the most recently received TCP packet as a stream
+            InputStream response = new DataInputStream(acceptedSocket.getInputStream());
+            // convert to byte array
             byte[] packetBytes = Utility.inputStreamToByteArray(response);
 
             // see if response is a message or a handshake
@@ -74,13 +81,13 @@ class peerProcess
             if (packetBytes.length == 32 && new String(packetHeader).equals(HandshakeMessage.header))
             {
                 System.out.println("Got handshake");
+                int peerId = Utility.byteArrayToInt(Arrays.copyOfRange(packetBytes, 28, 32));
 
                 // this is a handshake meant for us
-                int peerId = Utility.byteArrayToInt(Arrays.copyOfRange(packetBytes, 28, 32));
                 if (peerId == myPeerId)
                 {
                     // if we sent a handshake already and just received one, send a bitfield message
-                    if (config.peers.get(peerId).HasSentHandshake())
+                    if (handshakeHosts.contains(acceptedSocket.getInetAddress().getHostName()))
                     {
                         System.out.println("We should send a bitfield msg here.");
                     }
@@ -89,7 +96,10 @@ class peerProcess
                         config.peers.get(peerId).OpenSocket();
                         HandshakeMessage handshake = new HandshakeMessage(peerId);
                         handshake.send(config.peers.get(peerId).GetSocket());
-                        config.peers.get(peerId).SetSentHandshake(true);
+                        // keep track of who we have already sent a handshake message to
+                        //config.peers.get(peerId).SetSentHandshake(true);
+                        handshakeHosts.add(config.peers.get(peerId).GetHostname());
+
                     }
 
                 }

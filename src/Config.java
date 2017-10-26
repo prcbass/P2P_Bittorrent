@@ -43,7 +43,9 @@ public class Config
             boolean hasFile = line[3].trim().equals("1");
 
             if (id == myPeerId)
+            {
                 serverListenPort = port;
+            }
 
             peers.put(id, new Peer(id, hostname, port, hasFile));
         }
