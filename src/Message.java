@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 
-public class Message {
+public class Message 
+{
 
 	public final static int CHOKE = 0;
 	public final static int UNCHOKE = 1;
@@ -19,37 +20,45 @@ public class Message {
 	private byte[] payload;
 	private int type;
 	
-	public Message() {
+	public Message() 
+	{
 		length = 0;
 		type = 0;
 		payload = null;
 	}
 	
-	public Message(int type, int length, byte[] payload) {
+	public Message(int type, int length, byte[] payload) 
+	{
 		this.type = type;
 		this.length = length;
 		this.payload = payload;
 	}
 	
 	//reads an incoming packet from Socket and sets length, type, and payload for this object
-	public void read(Socket sock) throws IOException {
+	public void read(Socket sock) throws IOException 
+	{
 		//TODO: See how this is used with the main listening code we have in PeerProcess(while true loop)
 		DataInputStream in = new DataInputStream(sock.getInputStream());
 		byte[] packetBytes = Utility.inputStreamToByteArray(in);
 		length = Utility.byteArrayToInt(Arrays.copyOfRange(packetBytes, 0, 4));
 		type = Utility.byteArrayToInt(Arrays.copyOfRange(packetBytes, 4, 5));
 		
-		if(packetBytes.length > 5) {
+		if(packetBytes.length > 5) 
+		{
 			payload = Arrays.copyOfRange(packetBytes, 5, packetBytes.length);
-		} else {
+		} else 
+		{
 			payload = null;
 		}
 	}
 	
-	public void send(Socket sock) throws IOException {
-		if(payload == null) {
+	public void send(Socket sock) throws IOException 
+	{
+		if(payload == null) 
+		{
 			length = 1;
-		} else {
+		} else 
+		{
 			length = payload.length + 1;
 		}
 		
@@ -57,30 +66,36 @@ public class Message {
 		out.writeInt(length);
 		out.writeByte(type);
 		
-		if(payload != null) {
+		if(payload != null) 
+		{
 			out.write(payload);
 		}
 		out.flush();
 		out.close();
 	}
 	
-	public int getType() {
+	public int getType() 
+	{
 		return type;
 	}
 	
-	public int getLength() {
+	public int getLength() 
+	{
 		return length;
 	}
 	
-	public byte[] getPayload() {
+	public byte[] getPayload() 
+	{
 		return payload;
 	}
 	
-	public void setType(int type) {
+	public void setType(int type) 
+	{
 		this.type = type;
 	}
 	
-	public void setLength(int length) {
+	public void setLength(int length) 
+	{
 		this.length = length;
 	}
 }
