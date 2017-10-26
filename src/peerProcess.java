@@ -56,6 +56,7 @@ class peerProcess
                 break;
             }
 
+            config.peers.get(peerId).OpenSocket();
             HandshakeMessage handshake = new HandshakeMessage(peerId);
             handshake.send(config.peers.get(peerId).GetSocket());
             config.peers.get(peerId).SetSentHandshake(true);
