@@ -13,37 +13,36 @@ public class Bitfield {
 		bitfield = new boolean[piecesTotal];
 	}
 	
-    public boolean[] getBitField()
-    {
+	public boolean[] getBitField()
+	{
 		return this.bitfield;
-    	
-    }
+	}
 	
-    public void setBit(int index)
-    {
-	   if(bitfield[index] == false)
+	public void setBit(int index)
+	{
+		if(bitfield[index] == false)
 	   {
-		   bitfield[index] = true;
-		   piecesDownloaded++;
-		   if(piecesDownloaded >= piecesTotal)
-		   {
-			   completed = true;
-		   }
+			bitfield[index] = true;
+			piecesDownloaded++;
+			if(piecesDownloaded >= piecesTotal)
+			{
+				completed = true;
+			}
 	   }
-    }
-    
-    public void setAllBits()
-    {
-    	for (int i = 0; i < piecesTotal; i++)
-    	{
+	}
+	
+	public void setAllBits()
+	{
+		for (int i = 0; i < piecesTotal; i++)
+		{
 			bitfield[i] = true;
 		}
-    	completed = true;
-    }
-    
-    public boolean isCompleted()
-    {
-    	return completed;
-    }
+		completed = true;
+	}
+	
+	public boolean isCompleted()
+	{
+		return completed;
+	}
     
 }
