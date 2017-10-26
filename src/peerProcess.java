@@ -1,7 +1,6 @@
 import java.net.*;
 import java.io.*;
 import java.nio.*;
-import java.nio.channels.*;
 import java.util.*;
 
 class peerProcess
@@ -17,6 +16,7 @@ class peerProcess
                 return i;
         return -1;
     }
+    
     public static void main(String[] args) throws IOException, ClassNotFoundException
     {
         if (args.length < 1)
@@ -51,7 +51,7 @@ class peerProcess
             return;
         }
 
-        ServerSocket listener = new ServerSocket(2000);
+        ServerSocket listener = new ServerSocket(3000); //TODO: Close listener
         System.out.println("Listening on port " + listener.getLocalPort());
 
         // send a handshake message to all peers before us
@@ -63,6 +63,7 @@ class peerProcess
                 break;
             }
 
+            peers.get(i).OpenSocket();
             HandshakeMessage handshake = new HandshakeMessage(peers.get(i).GetId());
             handshake.send(peers.get(i).GetSocket());
             peers.get(i).SetSentHandshake(true);
@@ -72,27 +73,23 @@ class peerProcess
         while (true)
         {
             InputStream response = new DataInputStream(listener.accept().getInputStream());
-            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            byte[] buff = new byte[1024];
-            int read = 0;
-            while ((read = response.read(buff, 0, buff.length)) != -1)
-                byteStream.write(buff, 0, read);
-            byteStream.flush();
-            byte[] bytes = byteStream.toByteArray();
+            byte[] packetBytes = Utility.inputStreamToByteArray(response);
+            
             // see if response is a message or a handshake
-            System.out.println(new String(Arrays.copyOfRange(bytes, 0, 18)));
-            if (bytes.length == 32 && 
-                new String(Arrays.copyOfRange(bytes, 0, 18)).equals("P2PFILESHARINGPROJ"))
+            System.out.println(new String(Arrays.copyOfRange(packetBytes, 0, 18)));
+            byte[] packetHeader = Arrays.copyOfRange(packetBytes, 0, 18);
+            if (packetBytes.length == 32 && new String(packetHeader).equals(HandshakeMessage.header))
             {
                 System.out.println("Got handshake");
                 // this is a handshake meant for us
-                if (ByteBuffer.wrap(Arrays.copyOfRange(bytes, 28, 32)).getInt() == peerId)
+                byte[] peerIDFromPacket = Arrays.copyOfRange(packetBytes, 28, 32);
+                if (Utility.byteArrayToInt(peerIDFromPacket) == peerId)
                 {
                     int peerIndex = getPeerIndexFromId(peerId);
                     // if we sent a handshake already and just received one, send a bitfield message
                     if (peers.get(peerIndex).HasSentHandshake())
                     {
-                        System.out.println("We should senda bitfield msg here.");
+                        System.out.println("We should send a bitfield msg here.");
                     }
                     else
                     {

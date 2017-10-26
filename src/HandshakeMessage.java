@@ -6,7 +6,7 @@ import java.util.*;
 
 public class HandshakeMessage 
 {
-	private final static String header = "P2PFILESHARINGPROJ";
+	public final static String header = "P2PFILESHARINGPROJ";
 	private int ID;
 	
 	public HandshakeMessage(int ID) 
@@ -14,22 +14,17 @@ public class HandshakeMessage
 		this.ID = ID;
 	}
 	
-	public void read() 
-	{
-		
-	}
-	
 	// create and send a handshake message
 	public void send(Socket sock) throws IOException
 	{
-		DataOutputStream data = new DataOutputStream(sock.getOutputStream());
-		data.writeBytes(header);
-		data.writeLong(0);
-		data.writeShort(0);
-		data.writeInt(ID);
-		System.out.println("Created handshake message of size " + data.size());
-		data.flush();
-		data.close();
+		DataOutputStream out = new DataOutputStream(sock.getOutputStream());
+		out.writeBytes(header);
+		out.writeLong(0);
+		out.writeShort(0);
+		out.writeInt(ID);
+		System.out.println("Created handshake message of size " + out.size());
+		out.flush();
+		out.close();
 	}
 	
 	public int getID() 
