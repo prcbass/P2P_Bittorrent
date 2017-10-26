@@ -10,8 +10,8 @@ public class Config
     private final int unchokingInterval;
     private final int optimisticUnchokingInterval;
     private final String fileName;
-    private final int fileSize; // in bytes
-    private final int pieceSize; // in bytes
+    private final int fileSizeInBytes;
+    private final int pieceSizeInBytes; 
 
     LinkedHashMap<Integer, Peer> peers;
     private int serverListenPort;
@@ -24,8 +24,8 @@ public class Config
         this.unchokingInterval = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
         this.optimisticUnchokingInterval = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
         this.fileName = cfg.nextLine().split(" ")[1].trim();
-        this.fileSize = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
-        this.pieceSize = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
+        this.fileSizeInBytes = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
+        this.pieceSizeInBytes = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
         cfg.close();
 
         peers = new LinkedHashMap<Integer, Peer>();
