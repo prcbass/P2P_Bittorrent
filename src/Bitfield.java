@@ -1,10 +1,10 @@
 
 public class Bitfield {
 
-    private boolean[] bitfield;
-    private int piecesTotal;
-    private int piecesDownloaded;
-    private boolean completed;
+	private boolean[] bitfield;
+	private int piecesTotal;
+	private int piecesDownloaded;
+	private boolean completed;
 	
 	Bitfield(int piecesTotal)
 	{
