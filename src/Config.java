@@ -1,5 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.*;
 
 public class Config
@@ -10,6 +12,9 @@ public class Config
     private final String fileName;
     private final int fileSize; // in bytes
     private final int pieceSize; // in bytes
+
+    LinkedHashMap<Integer, Peer> peers;
+    private int serverListenPort;
 
 
     Config(String commonFile) throws FileNotFoundException
@@ -22,11 +27,12 @@ public class Config
         this.fileSize = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
         this.pieceSize = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
         cfg.close();
+
+        peers = new LinkedHashMap<Integer, Peer>();
     }
 
-    ArrayList<Peer> initPeers(String peerInfoFile, int peerId) throws FileNotFoundException
+    void initPeers(String peerInfoFile, int myPeerId) throws FileNotFoundException, UnknownHostException, IOException
     {
-        ArrayList<Peer> peers = new ArrayList<Peer>();
         Scanner peerInfo = new Scanner(new FileReader(peerInfoFile));
         while (peerInfo.hasNextLine())
         {
@@ -36,12 +42,18 @@ public class Config
             int port = Integer.parseInt(line[2]);
             boolean hasFile = line[3].trim().equals("1");
 
-            // don't add our client to the peer list (no need to send anything to ourselves)
-            if (id == peerId)
-                continue;
-            peers.add(new Peer(id, hostname, port, hasFile));
+            if (id == myPeerId)
+                serverListenPort = port;
+
+            peers.put(id, new Peer(id, hostname, port, hasFile));
         }
+
         peerInfo.close();
-        return peers;
+        return;
+    }
+
+    public int getServerListenPort()
+    {
+        return this.serverListenPort;
     }
 }
