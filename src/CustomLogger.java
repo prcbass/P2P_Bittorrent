@@ -15,27 +15,27 @@ public class CustomLogger
 	{
 		this.id = id;
 		logger = Logger.getLogger("peer" + id);
-        File dir = new File("peer_" + id);
-        if(!dir.isDirectory())
-        {
-            dir.mkdir();
-        }
-        fileHandler = new FileHandler(dir.getPath() + "/log_peer_" + id + ".log");
-        fileHandler.setFormatter(new SimpleFormatter()
-        {
-            private static final String format = "%1$tF %1$tT %3$s %n";
-
-            @Override
-            public synchronized String format(LogRecord lr)
-            {
-                return String.format(format,
-                        new Date(lr.getMillis()),
-                        lr.getLevel().getLocalizedName(),
-                        lr.getMessage()
-                );
-            }
-        });
-        logger.addHandler(fileHandler);        
+		File dir = new File("peer_" + id);
+		if(!dir.isDirectory())
+		{
+		    dir.mkdir();
+		}
+		fileHandler = new FileHandler(dir.getPath() + "/log_peer_" + id + ".log");
+		fileHandler.setFormatter(new SimpleFormatter()
+		{
+		    private static final String format = "%1$tF %1$tT %3$s %n";
+		
+		    @Override
+		    public synchronized String format(LogRecord lr)
+		    {
+		        return String.format(format,
+		                new Date(lr.getMillis()),
+		                lr.getLevel().getLocalizedName(),
+		                lr.getMessage()
+		        );
+		    }
+		});
+		logger.addHandler(fileHandler);        
 	}
 	
 	public void TCPConnection(int id2)
