@@ -104,10 +104,36 @@ class peerProcess
 
                 }
             }
+
+            // packet is not a handshake
             else 
             {
-            	//this is a non-handshake packet and needs to be handled accordingly
-
+                // init packet and set up its structure
+                Message m = new Message();
+                m.read(acceptedSocket);
+                System.out.printf("Received packet of type %s from %s\n", m.getType(), acceptedSocket.getInetAddress().getHostName());
+                switch(m.getType())
+                {
+                    case Message.CHOKE:
+                        break;
+                    case Message.UNCHOKE:
+                        break;
+                    case Message.INTERESTED:
+                        break;
+                    case Message.NOT_INTERESTED:
+                        break;
+                    case Message.HAVE:
+                        break;
+                    case Message.BITFIELD:
+                        break;
+                    case Message.REQUEST:
+                        break;
+                    case Message.PIECE:
+                        break;
+                    default:
+                        System.out.println("Received unknown packet type: " + m.getType() + "! Exiting...");
+                        return;
+                }
             }
         }
     }

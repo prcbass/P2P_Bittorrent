@@ -15,6 +15,31 @@ public class Message
 	public final static int BITFIELD = 5;
 	public final static int REQUEST = 6;
 	public final static int PIECE = 7;
+
+	public static String getPacketTypeName(int type)
+	{
+		switch (type)
+		{
+			case CHOKE:
+				return "CHOKE";
+			case UNCHOKE:
+				return "UNCHOKE";
+			case Message.INTERESTED:
+				return "INTERESTED";
+			case Message.NOT_INTERESTED:
+				return "NOT_INTERESTED";
+			case Message.HAVE:
+				return "HAVE";
+			case Message.BITFIELD:
+				return "BITFIELD";
+			case Message.REQUEST:
+				return "REQUEST";
+			case Message.PIECE:
+				return "PIECE";
+		}
+
+		return "UNK";
+	}
 	
 	private int length;
 	private byte[] payload;
