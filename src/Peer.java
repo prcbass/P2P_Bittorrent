@@ -73,4 +73,13 @@ public class Peer
     {
         return String.format("Peer %d: %s:%d %s", id, hostname, port, hasFile ? "Has file" : "No file");
     }
+
+    public void initBitField(int numPieces, boolean hasFile)
+    {
+        this.bitfield = new Bitfield(numPieces);
+        if (hasFile)
+        {
+            this.bitfield.setAllBits();
+        }
+    }
 }

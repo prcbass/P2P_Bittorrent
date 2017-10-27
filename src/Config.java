@@ -47,7 +47,17 @@ public class Config
                 serverListenPort = port;
             }
 
-            peers.put(id, new Peer(id, hostname, port, hasFile));
+            // create new peer object based on line from peerInfo.cfg
+            Peer p = new Peer(id, hostname, port, hasFile);
+
+            // important to ceil this to ensure that any partial pieces are still included
+            int numPieces = (int)Math.ceil(this.fileSizeInBytes / this.pieceSizeInBytes);
+
+            // initialize peer bitfield (all 1s if hasFile, all 0s otherwise)
+            p.initBitField(numPieces, hasFile);
+
+            // now that the peer is initialized, add it to the peers hashmap
+            peers.put(id, p);
         }
 
         peerInfo.close();
