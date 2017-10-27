@@ -22,4 +22,10 @@ public class Utility
 	{
 		return ByteBuffer.wrap(bytes).getInt();
 	}
+	
+	//int to 4 byte representation
+	public static byte[] intToByteArray(int number) 
+	{
+		return ByteBuffer.allocate(4).putInt(number).array();
+	}
 }

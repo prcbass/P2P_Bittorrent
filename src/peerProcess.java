@@ -106,6 +106,7 @@ class peerProcess
             }
             else 
             {
+            	//this is a non-handshake packet and needs to be handled accordingly
 
             }
         }
