@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Bitfield {
 
@@ -38,6 +39,20 @@ public class Bitfield {
 			bitfield[i] = true;
 		}
 		completed = true;
+	}
+
+	public ArrayList<Integer> getRequiredBits()
+	{
+		ArrayList<Integer> requiredBits = new ArrayList<Integer>();
+		for (int i = 0; i < piecesTotal; i++)
+		{
+			if (!bitfield[i])
+			{
+				requiredBits.add(i);
+			}
+		}
+
+		return requiredBits;
 	}
 	
 	public boolean isCompleted()
