@@ -50,12 +50,11 @@ class peerProcess
         // set up sockets for all peers and send handshakes to peers with lower peerIDs than us
         for (int peerId : config.peers.keySet())
         {
-            config.peers.get(peerId).OpenSocket();
-
             // we need to make first contact with peers that have a smaller peerId
             if (peerId < myPeerId)
             {
                 logger.TCPMakeConnection(peerId);
+                config.peers.get(peerId).OpenSocket();
 
                 // make first contact by sending a handshake message
                 HandshakeMessage handshake = new HandshakeMessage(peerId);
@@ -66,6 +65,12 @@ class peerProcess
             else
             {
                 logger.TCPIsConnected(peerId);
+                Socket peerSocket = listener.accept();
+                System.out.printf("Got socket host:%s port:%d\n", peerSocket.getInetAddress(), peerSocket.getLocalPort());
+
+                System.out.printf("Opening socket with %s:%d...", config.peers.get(peerId).GetHostname(), config.peers.get(peerId).GetPort());
+                config.peers.get(peerId).OpenSocket();
+                System.out.println("Done");
             }
 
             // spawn a thread that handles all messages received
