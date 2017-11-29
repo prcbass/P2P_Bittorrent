@@ -20,6 +20,8 @@ public class MessageReceiver implements Runnable
 
         output = new DataOutputStream(socket.getOutputStream());
         output.flush();
+
+        System.out.printf("Starting receiver for socket %s:%d", socket.getInetAddress(), socket.getPort());
     }
 
     public void run()
@@ -36,7 +38,7 @@ public class MessageReceiver implements Runnable
             }
 
             catch (Exception e) {
-                e.printStackTrace();
+                break;
             }
         }
     }
