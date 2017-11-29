@@ -68,7 +68,7 @@ class peerProcess
                 Socket peerSocket = listener.accept();
                 System.out.printf("Got socket host:%s port:%d\n", peerSocket.getInetAddress(), peerSocket.getLocalPort());
 
-                System.out.printf("Opening socket with %s:%d...", config.peers.get(peerId).GetHostname(), config.peers.get(peerId).GetPort());
+                System.out.printf("Opening socket with %s:%d...", config.peers.get(peerId).GetHostname(), peerSocket.getLocalPort());
                 config.peers.get(peerId).OpenSocket();
                 System.out.println("Done");
             }
