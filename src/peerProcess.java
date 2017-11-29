@@ -47,7 +47,7 @@ class peerProcess
         ServerSocket listener = new ServerSocket(config.getServerListenPort());
         System.out.println("Listening on port " + listener.getLocalPort());
 
-        // establish connections with all peers
+        // set up sockets for all peers and send handshakes to peers with lower peerIDs than us
         for (int peerId : config.peers.keySet())
         {
             config.peers.get(peerId).OpenSocket();
@@ -68,50 +68,12 @@ class peerProcess
                 logger.TCPIsConnected(peerId);
             }
 
+            // spawn a thread that handles all messages received
+            Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, config.peers.get(peerId).GetSocket()));
+            messageReceiver.start();
+
         }
 
-        // wait for responses and react accordingly
-        /*while (true)
-        {
-            Socket acceptedSocket = listener.accept();
-            // contains Data field of the most recently received TCP packet as a stream
-            InputStream response = new DataInputStream(acceptedSocket.getInputStream());
-            // convert to byte array
-            byte[] packetBytes = Utility.inputStreamToByteArray(response);
 
-            // see if response is a message or a handshake
-            System.out.println(new String(Arrays.copyOfRange(packetBytes, 0, 18)));
-            byte[] packetHeader = Arrays.copyOfRange(packetBytes, 0, 18);
-            if (packetBytes.length == 32 && new String(packetHeader).equals(HandshakeMessage.header))
-            {
-                System.out.println("Got handshake");
-                int peerId = Utility.byteArrayToInt(Arrays.copyOfRange(packetBytes, 28, 32));
-
-                // this is a handshake meant for us
-                if (peerId == myPeerId)
-                {
-                    // if we sent a handshake already and just received one, send a bitfield message
-                    if (handshakeHosts.contains(acceptedSocket.getInetAddress().getHostName()))
-                    {
-                        System.out.println("We should send a bitfield msg here.");
-                    }
-                    else
-                    {
-                        config.peers.get(peerId).OpenSocket();
-                        HandshakeMessage handshake = new HandshakeMessage(peerId);
-                        handshake.send(config.peers.get(peerId).GetSocket());
-                        // keep track of who we have already sent a handshake message to
-                        //config.peers.get(peerId).SetSentHandshake(true);
-                        handshakeHosts.add(config.peers.get(peerId).GetHostname());
-
-                    }
-
-                }
-            }
-            else 
-            {
-
-            }
-        }*/
     }
 }
