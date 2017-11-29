@@ -64,7 +64,7 @@ public class Peer
         this.sentHandshake = sent;
     }
 
-    public void OpenSocket() throws UnknownHostException, IOException
+    public void OpenSocket() throws IOException
     {
         this.socket = new Socket(hostname, port); //for sending requests
     }

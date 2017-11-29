@@ -19,7 +19,6 @@ public class HandshakeMessage
 		out.writeLong(0);
 		out.writeShort(0);
 		out.writeInt(ID);
-		System.out.println("Created handshake message of size " + out.size());
 		out.flush();
 		out.close();
 	}

@@ -1,7 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.*;
 
 public class Config
@@ -31,13 +30,14 @@ public class Config
         peers = new LinkedHashMap<Integer, Peer>();
     }
 
-    void initPeers(String peerInfoFile, int myPeerId) throws FileNotFoundException, UnknownHostException, IOException
+    void initPeers(String peerInfoFile, int myPeerId) throws IOException
     {
         Scanner peerInfo = new Scanner(new FileReader(peerInfoFile));
         while (peerInfo.hasNextLine())
         {
             String[] line = peerInfo.nextLine().split(" ");
             int id = Integer.parseInt(line[0]);
+
             String hostname = line[1];
             int port = Integer.parseInt(line[2]);
             boolean hasFile = line[3].trim().equals("1");
@@ -45,6 +45,7 @@ public class Config
             if (id == myPeerId)
             {
                 serverListenPort = port;
+                continue;
             }
 
             peers.put(id, new Peer(id, hostname, port, hasFile));

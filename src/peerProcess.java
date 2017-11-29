@@ -5,9 +5,7 @@ import java.util.*;
 class peerProcess
 {
     private static Config config;
-
-    // this is a hack caused by the fact that handshake MSGs only contain 1 peerID - the peer we want to connect to.
-    private static ArrayList<String> handshakeHosts = new ArrayList<String>();
+    private static CustomLogger logger;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException
     {
@@ -18,6 +16,7 @@ class peerProcess
         }
 
         int myPeerId = Integer.parseInt(args[0]);
+        logger = new CustomLogger(myPeerId);
 
         // load Common.cfg
         try
@@ -44,30 +43,35 @@ class peerProcess
             return;
         }
 
-        //
+        // open a socket for accepting requests
         ServerSocket listener = new ServerSocket(config.getServerListenPort());
         System.out.println("Listening on port " + listener.getLocalPort());
 
-        // send a handshake message to all peers listed before us in peerInfo.cfg
+        // establish connections with all peers
         for (int peerId : config.peers.keySet())
         {
-            if (peerId == myPeerId)
+            config.peers.get(peerId).OpenSocket();
+
+            // we need to make first contact with peers that have a smaller peerId
+            if (peerId < myPeerId)
             {
-                System.out.println("breaking cause peer" + peerId + " is us");
-                break;
+                logger.TCPMakeConnection(peerId);
+
+                // make first contact by sending a handshake message
+                HandshakeMessage handshake = new HandshakeMessage(peerId);
+                handshake.send(config.peers.get(peerId).GetSocket());
             }
 
-            config.peers.get(peerId).OpenSocket();
-            HandshakeMessage handshake = new HandshakeMessage(peerId);
-            handshake.send(config.peers.get(peerId).GetSocket());
+            // we wait for first contact from peers with a bigger peerId
+            else
+            {
+                logger.TCPIsConnected(peerId);
+            }
 
-            // keep track of who we have already sent a handshake message to
-            //config.peers.get(peerId).SetSentHandshake(true);
-            handshakeHosts.add(config.peers.get(peerId).GetHostname());
         }
 
         // wait for responses and react accordingly
-        while (true)
+        /*while (true)
         {
             Socket acceptedSocket = listener.accept();
             // contains Data field of the most recently received TCP packet as a stream
@@ -108,6 +112,6 @@ class peerProcess
             {
 
             }
-        }
+        }*/
     }
 }
