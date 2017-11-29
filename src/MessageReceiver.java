@@ -9,15 +9,17 @@ public class MessageReceiver implements Runnable
     private int peerId;
 
     DataOutputStream output;
-    ServerSocket listener;
+    DataInputStream input;
 
-    MessageReceiver(int myPeerId, int peerId, Socket socket, ServerSocket listener) throws IOException
+    MessageReceiver(int myPeerId, int peerId, Socket socket) throws IOException
     {
         this.myPeerId = myPeerId;
         this.peerId = peerId;
 
-        this.listener = listener;
+        input = new DataInputStream(socket.getInputStream());
+
         output = new DataOutputStream(socket.getOutputStream());
+        output.flush();
     }
 
     public void run()
@@ -27,12 +29,10 @@ public class MessageReceiver implements Runnable
         {
             try
             {
-                DataInputStream input = new DataInputStream(listener.accept().getInputStream());
-
                 byte[] lenBytes = new byte[4];
                 input.readFully(lenBytes, 0, 4);
                 int msgLength = Utility.byteArrayToInt(lenBytes);
-                System.out.println("Got message of length: " + msgLength);
+                System.out.println("Got message of length: " + msgLength + " from" + " PeerID: " + peerId);
             }
 
             catch (Exception e) {

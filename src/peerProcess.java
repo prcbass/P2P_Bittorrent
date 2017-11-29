@@ -62,14 +62,14 @@ class peerProcess
                 HandshakeMessage handshake = new HandshakeMessage(peerId);
                 handshake.send(config.peers.get(peerId).GetSocket());
 
-                messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, config.peers.get(peerId).GetSocket(), listener));
+                messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, config.peers.get(peerId).GetSocket()));
             }
 
             // we wait for first contact from peers with a bigger peerId
             else
             {
                 logger.TCPIsConnected(peerId);
-                messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, listener.accept(), listener));
+                messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, listener.accept()));
             }
 
             // spawn a thread that handles all messages received
