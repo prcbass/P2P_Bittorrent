@@ -1,10 +1,8 @@
 import java.net.*;
 import java.io.*;
-import java.util.*;
 
 class peerProcess
 {
-    private static Config config;
     private static CustomLogger logger;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException
@@ -21,7 +19,7 @@ class peerProcess
         // load Common.cfg
         try
         {
-            config = new Config("Common.cfg");
+            Config.initConfig("Common.cfg");
         }
         catch (Exception e)
         {
@@ -34,7 +32,7 @@ class peerProcess
         // create peer objects and open a socket for each one
         try
         {
-            config.initPeers("peerInfo.cfg", myPeerId);
+            Config.initPeers("peerInfo.cfg", myPeerId);
         }
         catch (Exception e)
         {
@@ -44,24 +42,24 @@ class peerProcess
         }
 
         // open a socket for accepting requests
-        ServerSocket listener = new ServerSocket(config.getServerListenPort());
+        ServerSocket listener = new ServerSocket(Config.getServerListenPort());
         System.out.println("Listening on port " + listener.getLocalPort());
 
         // set up sockets for all peers and send handshakes to peers with lower peerIDs than us
-        for (int peerId : config.peers.keySet())
+        for (int peerId : Config.peers.keySet())
         {
             Thread messageReceiver;
 
             // we need to make first contact with peers that have a smaller peerId
             if (peerId < myPeerId)
             {
-                config.peers.get(peerId).OpenSocket();
+                Config.peers.get(peerId).OpenSocket();
                 logger.TCPMakeConnection(peerId);
 
                 // make first contact by sending a handshake message
                 HandshakeMessage handshake = new HandshakeMessage(myPeerId);
-                handshake.send(config.peers.get(peerId).GetSocket());
-                messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, config.peers.get(peerId).GetSocket()));
+                handshake.send(Config.peers.get(peerId).GetSocket());
+                messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, Config.peers.get(peerId).GetSocket()));
             }
 
             // we wait for first contact from peers with a bigger peerId
