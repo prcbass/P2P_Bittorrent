@@ -4,6 +4,9 @@ import java.io.*;
 public class HandshakeMessage 
 {
 	public final static String header = "P2PFILESHARINGPROJ";
+	public final static byte[] headerBytes = header.getBytes();
+
+	public final static byte[] zeroBytes = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	private int ID;
 	
 	public HandshakeMessage(int ID) 
@@ -20,7 +23,7 @@ public class HandshakeMessage
 		out.writeShort(0);
 		out.writeInt(ID);
 		out.flush();
-		out.close();
+		//out.close();
 	}
 	
 	public int getID() 
