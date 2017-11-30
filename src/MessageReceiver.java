@@ -37,6 +37,9 @@ public class MessageReceiver implements Runnable
         {
             try
             {
+                if (input.available() == 0)
+                    continue;
+
                 byte[] lenBytes = new byte[4];
                 input.readFully(lenBytes, 0, 4);
 
@@ -119,8 +122,9 @@ public class MessageReceiver implements Runnable
             }
             else
             {
+                System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().length +") to " + peerId);
                 sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField());
-                System.out.printf("%d should send bitfield message to %d\n", myPeerId, peerId);
+                //System.out.printf("%d should send bitfield message to %d\n", myPeerId, peerId);
             }
         }
         else
@@ -131,9 +135,12 @@ public class MessageReceiver implements Runnable
 
     public void sendMessage(int type, byte[] payload) throws IOException
     {
-        output.writeInt(payload.length);
+        System.out.println("Output buffer at start: " + output.size());
+        output.writeInt(payload.length + 1);
         output.writeByte(type);
         output.write(payload);
+        System.out.println("Output buffer at end: " + output.size());
         output.flush();
+        System.out.println("Output buffer after flush: " + output.size());
     }
 }

@@ -69,4 +69,12 @@ public class Peer
     {
         return this.bitfield.toByteArray();
     }
+
+    public String PrintBitset()
+    {
+        String res = "";
+        for (int i = 0; i < bitfield.length(); i++)
+            res += bitfield.get(i) ? "1" : "0";
+        return res + bitfield.length();
+    }
 }
