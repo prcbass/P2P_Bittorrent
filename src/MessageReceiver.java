@@ -43,8 +43,25 @@ public class MessageReceiver implements Runnable
             {
                 if (input.available() == 0)
                 {
-                    //System.out.println("Nothing to read");
-                    continue;
+                    System.out.print("Nothing to read, checking all peers...");
+                    int finishedPeers = 0;
+                    for (Peer p : Config.peers.values())
+                    {
+                        if (p.getBitField().cardinality() == p.getBitField().length())
+                            finishedPeers++;
+                    }
+
+                    if (finishedPeers == Config.peers.size())
+                    {
+                        for (Peer p : Config.peers.values())
+                            p.GetSocket().close();
+                        System.out.println("Exiting! We're done.");
+                        System.exit(0);
+                    }
+                    else
+                    {
+                        System.out.println(Config.peers.size() - finishedPeers + " peers are not done yet.");
+                    }
                 }
 
                 byte[] lenBytes = new byte[4];
