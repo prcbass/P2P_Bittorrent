@@ -65,9 +65,14 @@ public class Peer
         return String.format("Peer %d: %s:%d %s", id, hostname, port, hasFile ? "Has file" : "No file");
     }
 
-    public byte[] getBitField()
+    public BitSet getBitField()
     {
-        return this.bitfield.toByteArray();
+        return this.bitfield;
+    }
+
+    public void setBitfield(BitSet bitfield)
+    {
+        this.bitfield = bitfield;
     }
 
     public String PrintBitset()

@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
+import java.util.BitSet;
 
 public class MessageReceiver implements Runnable
 {
@@ -15,6 +16,8 @@ public class MessageReceiver implements Runnable
     CustomLogger logger;
 
     boolean handshakeReceived;
+
+    boolean hasSentBitfield = false;
 
     MessageReceiver(int myPeerId, int peerId, Socket socket, boolean handshakeReceived, CustomLogger logger) throws IOException
     {
@@ -59,6 +62,8 @@ public class MessageReceiver implements Runnable
                 else
                 {
                     int msgLength = Utility.byteArrayToInt(lenBytes);
+                    byte[] payload = new byte[msgLength - 1];
+                    input.readFully(payload, 0, payload.length);
 
                     switch (msgType[0])
                     {
@@ -79,10 +84,7 @@ public class MessageReceiver implements Runnable
                             break;
                         case Message.BITFIELD:
                             System.out.printf("%d received BITFIELD from %d\n", myPeerId, peerId);
-                            //System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().length +") to " + peerId);
-                            byte[] payload = new byte[msgLength - 1];
-                            input.readFully(payload, 0, payload.length);
-                            //sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField());
+                            HandleBitFieldMsg(payload);
                             break;
                         case Message.REQUEST:
                             System.out.printf("%d received REQUEST from %d\n", myPeerId, peerId);
@@ -129,9 +131,16 @@ public class MessageReceiver implements Runnable
             }
             else
             {
-                System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().length +") to " + peerId);
-                sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField());
-                //output.close();
+                if (Config.peers.get(myPeerId).getBitField().cardinality() > 0)
+                {
+                    System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
+                    sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
+                    hasSentBitfield = true;
+                }
+                else
+                {
+                    System.out.println("Didn't send bitfield to " + peerId + ". (Bitfield is all 0s)");
+                }
             }
         }
         else
@@ -140,11 +149,42 @@ public class MessageReceiver implements Runnable
         }
     }
 
+    public synchronized void HandleBitFieldMsg(byte[] payload) throws IOException
+    {
+        // reply to a bitfield msg with our own bitfield if we haven't sent it before
+        if (!hasSentBitfield)
+        {
+            System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
+            sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
+            hasSentBitfield = true;
+        }
+
+        Config.peers.get(peerId).setBitfield(BitSet.valueOf(payload));
+
+        if (Utility.shouldBeInterested(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField()))
+        {
+            System.out.println("Sending interested msg from " + myPeerId + " to " + peerId);
+            sendMessage(Message.INTERESTED);
+        }
+        else
+        {
+            System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
+            sendMessage(Message.NOT_INTERESTED);
+        }
+    }
+
     public synchronized void sendMessage(int type, byte[] payload) throws IOException
     {
         output.writeInt(payload.length + 1);
         output.writeByte(type);
         output.write(payload);
+        output.flush();
+    }
+
+    public synchronized void sendMessage(int type) throws IOException
+    {
+        output.writeInt(1);
+        output.writeByte(type);
         output.flush();
     }
 }
