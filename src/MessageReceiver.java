@@ -1,4 +1,3 @@
-import javax.rmi.CORBA.Util;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -43,13 +42,47 @@ public class MessageReceiver implements Runnable
                 byte[] msgType = new byte[1];
                 input.readFully(msgType, 0, 1);
 
+                // 5th byte in P2PFILESHARINGPROJ is 'I'
+                // if the type is 'I' the message is probably a handshake
                 if (msgType[0] == 'I')
                 {
                     handleHandshakeMsg(lenBytes, msgType);
                 }
+                else
+                {
+                    int msgLength = Utility.byteArrayToInt(lenBytes);
+                    System.out.println("Got message of length: " + msgLength + " from" + " PeerID: " + peerId);
 
-                int msgLength = Utility.byteArrayToInt(lenBytes);
-                System.out.println("Got message of length: " + msgLength + " from" + " PeerID: " + peerId);
+                    switch (msgType[0])
+                    {
+                        case Message.CHOKE:
+                            System.out.printf("%d received CHOKE from %d\n", myPeerId, peerId);
+                            break;
+                        case Message.UNCHOKE:
+                            System.out.printf("%d received UNCHOKE from %d\n", myPeerId, peerId);
+                            break;
+                        case Message.INTERESTED:
+                            System.out.printf("%d received INTERESTED from %d\n", myPeerId, peerId);
+                            break;
+                        case Message.NOT_INTERESTED:
+                            System.out.printf("%d received NOT_INTERESTED from %d\n", myPeerId, peerId);
+                            break;
+                        case Message.HAVE:
+                            System.out.printf("%d received HAVE from %d\n", myPeerId, peerId);
+                            break;
+                        case Message.BITFIELD:
+                            System.out.printf("%d received BITFIELD from %d\n", myPeerId, peerId);
+                            break;
+                        case Message.REQUEST:
+                            System.out.printf("%d received REQUEST from %d\n", myPeerId, peerId);
+                            break;
+                        case Message.PIECE:
+                            System.out.printf("%d received PIECE from %d\n", myPeerId, peerId);
+                            break;
+                        default:
+                            System.out.println("*ERROR*: Received unknown message type: " + msgType[0]);
+                    }
+                }
             }
 
             catch (Exception e) {
