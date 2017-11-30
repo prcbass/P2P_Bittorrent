@@ -15,14 +15,14 @@ public class MessageReceiver implements Runnable
 
     CustomLogger logger;
 
-    boolean handshakeReceived;
+    boolean handshakeSent = false;
 
     boolean hasSentBitfield = false;
 
     // number of peers (including us) with the complete file
     int finishedPeers = 0;
 
-    MessageReceiver(int myPeerId, int peerId, Socket socket, boolean handshakeReceived, CustomLogger logger) throws IOException
+    MessageReceiver(int myPeerId, int peerId, Socket socket, boolean handshakeSent, CustomLogger logger) throws IOException
     {
         this.myPeerId = myPeerId;
         this.peerId = peerId;
@@ -34,7 +34,7 @@ public class MessageReceiver implements Runnable
 
         this.logger = logger;
 
-        this.handshakeReceived = handshakeReceived;
+        this.handshakeSent = handshakeSent;
 
         for (Peer p : Config.peers.values())
             if (p.HasFile())
@@ -51,8 +51,8 @@ public class MessageReceiver implements Runnable
                 // check if all peers have the complete file
                 if (finishedPeers == Config.peers.size())
                 {
-                    for (Peer p : Config.peers.values())
-                        p.GetSocket().close();
+                    /*for (Peer p : Config.peers.values())
+                        p.GetSocket().close();*/
                     System.out.println("Exiting! We're done.");
                     System.exit(0);
                 }
@@ -135,10 +135,11 @@ public class MessageReceiver implements Runnable
         if ((header.equals(HandshakeMessage.header) && id == peerId))
         {
             System.out.println("Valid");
-            if (!handshakeReceived)
+            if (!handshakeSent)
             {
-                handshakeReceived = true;
-                
+                handshakeSent = true;
+
+                System.out.println("Sending response handshake");
                 HandshakeMessage message = new HandshakeMessage(myPeerId);
                 message.send(output);
             }
@@ -165,7 +166,7 @@ public class MessageReceiver implements Runnable
     public synchronized void HandleBitFieldMsg(byte[] payload) throws IOException
     {
         // reply to a bitfield msg with our own bitfield if we haven't sent it before
-        if (!hasSentBitfield)
+        if (!hasSentBitfield && Config.peers.get(myPeerId).getBitField().cardinality() > 0)
         {
             System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
             sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());

@@ -65,6 +65,11 @@ public class Utility
 	// returns true if the BitSet 'them' has a 1 in an index that 'us' does not
 	public static boolean shouldBeInterested(BitSet us, BitSet them)
 	{
+		if (us.length() == 0 || them.length() == 0)
+        {
+            return them.length() > us.length();
+        }
+
 		for (int i = 0; i < us.length(); i++)
 		{
 			// if any index in the bitfield is different and 'them' has a 1, we are interested
