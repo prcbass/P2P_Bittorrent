@@ -5,32 +5,32 @@ import java.util.*;
 
 public class Config
 {
-    private final int numberOfPreferredNeighbors;
-    private final int unchokingInterval;
-    private final int optimisticUnchokingInterval;
-    private final String fileName;
-    private final int fileSizeInBytes;
-    private final int pieceSizeInBytes; 
+    static private int numberOfPreferredNeighbors;
+    static private int unchokingInterval;
+    static private int optimisticUnchokingInterval;
+    static private String fileName;
+    static private int fileSizeInBytes;
+    static private int pieceSizeInBytes;
 
-    LinkedHashMap<Integer, Peer> peers;
-    private int serverListenPort;
+    static LinkedHashMap<Integer, Peer> peers;
+    static private int serverListenPort;
 
 
-    Config(String commonFile) throws FileNotFoundException
+    public static void initConfig(String commonFile) throws FileNotFoundException
     {
         Scanner cfg = new Scanner(new FileReader(commonFile));
-        this.numberOfPreferredNeighbors = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
-        this.unchokingInterval = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
-        this.optimisticUnchokingInterval = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
-        this.fileName = cfg.nextLine().split(" ")[1].trim();
-        this.fileSizeInBytes = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
-        this.pieceSizeInBytes = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
+        numberOfPreferredNeighbors = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
+        unchokingInterval = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
+        optimisticUnchokingInterval = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
+        fileName = cfg.nextLine().split(" ")[1].trim();
+        fileSizeInBytes = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
+        pieceSizeInBytes = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
         cfg.close();
 
         peers = new LinkedHashMap<Integer, Peer>();
     }
 
-    void initPeers(String peerInfoFile, int myPeerId) throws IOException
+    public static void initPeers(String peerInfoFile, int myPeerId) throws IOException
     {
         Scanner peerInfo = new Scanner(new FileReader(peerInfoFile));
         while (peerInfo.hasNextLine())
@@ -55,8 +55,8 @@ public class Config
         return;
     }
 
-    public int getServerListenPort()
+    public static int getServerListenPort()
     {
-        return this.serverListenPort;
+        return serverListenPort;
     }
 }
