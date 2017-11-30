@@ -39,7 +39,7 @@ public class Peer
 
     public boolean HasFile()
     {
-        return this.bitfield.cardinality() == this.bitfield.size();
+        return this.bitfield.cardinality() == this.bitfield.length();
     }
 
     public Socket GetSocket()
