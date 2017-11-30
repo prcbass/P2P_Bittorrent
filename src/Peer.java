@@ -78,13 +78,4 @@ public class Peer
             res += bitfield.get(i) ? "1" : "0";
         return res + bitfield.length();
     }
-
-    public void initBitField(int numPieces, boolean hasFile)
-    {
-        this.bitfield = new Bitfield(numPieces);
-        if (hasFile)
-        {
-            this.bitfield.setAllBits();
-        }
-    }
 }

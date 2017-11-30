@@ -58,8 +58,6 @@ public class MessageReceiver implements Runnable
                     System.exit(0);
                 }
 
-                System.out.println("Finished peers: " + finishedPeers);
-
                 byte[] lenBytes = new byte[4];
                 input.readFully(lenBytes, 0, 4);
 
