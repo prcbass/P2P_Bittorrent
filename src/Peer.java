@@ -10,12 +10,17 @@ public class Peer
     private Socket socket;
     private Bitfield bitfield;
 
-    Peer(int id, String hostname, int port, boolean hasFile) throws UnknownHostException, IOException
+    Peer(int id, String hostname, int port, boolean hasFile, int bitfieldLength) throws IOException
     {
         this.id = id;
         this.hostname = hostname;
         this.port = port;
         this.hasFile = hasFile;
+        this.bitfield = new Bitfield(bitfieldLength);
+
+        // bitfield should be all 1s if this peer has the file
+        if (this.hasFile)
+            this.bitfield.setAllBits();
     }
 
     public int GetId()

@@ -1,3 +1,4 @@
+import javax.rmi.CORBA.Util;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -48,7 +49,8 @@ public class Config
                 continue;
             }
 
-            peers.put(id, new Peer(id, hostname, port, hasFile));
+            int bitfieldSize = Utility.calculateBitfieldSizeInBytes(pieceSizeInBytes, fileSizeInBytes);
+            peers.put(id, new Peer(id, hostname, port, hasFile, bitfieldSize));
         }
 
         peerInfo.close();
