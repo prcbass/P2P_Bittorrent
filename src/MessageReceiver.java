@@ -132,7 +132,7 @@ public class MessageReceiver implements Runnable
     public void sendMessage(int type, byte[] payload) throws IOException
     {
         output.writeInt(payload.length);
-        output.writeShort(type);
+        output.writeByte(type);
         output.write(payload);
         output.flush();
     }
