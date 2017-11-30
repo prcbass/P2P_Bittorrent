@@ -79,13 +79,9 @@ public class MessageReceiver implements Runnable
             if (!handshakeReceived)
             {
                 handshakeReceived = true;
-
-
-                // responde to the first handshake with another handshake
-                byte[] handshakeBytes = Utility.combine(HandshakeMessage.headerBytes, HandshakeMessage.zeroBytes);
-                output.write(handshakeBytes);
-                output.writeInt(myPeerId);
-                output.flush();
+                
+                HandshakeMessage message = new HandshakeMessage(myPeerId);
+                message.send(output);
             }
             else
             {

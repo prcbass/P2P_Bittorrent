@@ -23,7 +23,17 @@ public class HandshakeMessage
 		out.writeShort(0);
 		out.writeInt(ID);
 		out.flush();
-		//out.close();
+		out.close();
+	}
+	
+	public void send(OutputStream output) throws IOException {
+		DataOutputStream out = new DataOutputStream(output);
+		out.writeBytes(header);
+		out.writeLong(0);
+		out.writeShort(0);
+		out.writeInt(ID);
+		out.flush();
+		out.close();
 	}
 	
 	public int getID() 

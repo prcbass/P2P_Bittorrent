@@ -59,7 +59,7 @@ class peerProcess
                 logger.TCPMakeConnection(peerId);
 
                 // make first contact by sending a handshake message
-                HandshakeMessage handshake = new HandshakeMessage(peerId);
+                HandshakeMessage handshake = new HandshakeMessage(myPeerId);
                 handshake.send(config.peers.get(peerId).GetSocket());
                 messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, config.peers.get(peerId).GetSocket()));
             }
