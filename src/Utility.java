@@ -2,6 +2,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Utility 
 {
@@ -34,4 +35,29 @@ public class Utility
         System.arraycopy(right, 0, res, leftLen, rightLen);
         return res;
     }
+	
+	public static int calculateBitfieldSizeInBytes(int pieceSizeInBytes, int fileSizeInBytes) {
+		int numPieces;
+		
+		if(fileSizeInBytes % pieceSizeInBytes != 0) {
+			numPieces = (fileSizeInBytes / pieceSizeInBytes) + 1;
+		} else {
+			numPieces = fileSizeInBytes / pieceSizeInBytes;
+		}
+		
+		return numPieces % 8 != 0 ? numPieces/8 + 1 : numPieces/8;
+	}
+	
+	//gives you byte array with all 0 bytes
+	public static byte[] getEmptyByteArray(int byteFieldSizeInBytes) {
+		byte[] empty = new byte[byteFieldSizeInBytes];
+		Arrays.fill(empty, (byte) 0);
+		return empty;
+	}
+	
+	public static byte[] getFullByteArray(int byteFieldSizeInBytes) {
+		byte[] full = new byte[byteFieldSizeInBytes];
+		Arrays.fill(full, (byte) 1);
+		return full;
+	}
 }
