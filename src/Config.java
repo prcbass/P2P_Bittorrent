@@ -46,7 +46,7 @@ public class Config
             if (id == myPeerId)
             {
                 serverListenPort = port;
-                continue;
+                //continue;
             }
 
             int bitfieldSize = Utility.calculateBitfieldSizeInBytes(pieceSizeInBytes, fileSizeInBytes);

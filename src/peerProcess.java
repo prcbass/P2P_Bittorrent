@@ -48,8 +48,6 @@ class peerProcess
         // set up sockets for all peers and send handshakes to peers with lower peerIDs than us
         for (int peerId : Config.peers.keySet())
         {
-            Thread messageReceiver;
-
             // we need to make first contact with peers that have a smaller peerId
             if (peerId < myPeerId)
             {
@@ -59,18 +57,21 @@ class peerProcess
                 // make first contact by sending a handshake message
                 HandshakeMessage handshake = new HandshakeMessage(myPeerId);
                 handshake.send(Config.peers.get(peerId).GetSocket());
-                messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, Config.peers.get(peerId).GetSocket()));
+                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, Config.peers.get(peerId).GetSocket()));
+
+                // spawn a thread that handles all messages received
+                messageReceiver.start();
             }
 
             // we wait for first contact from peers with a bigger peerId
-            else
+            else if (peerId != myPeerId)
             {
                 logger.TCPIsConnected(peerId);
-                messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, listener.accept()));
-            }
+                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, listener.accept()));
 
-            // spawn a thread that handles all messages received
-            messageReceiver.start();
+                // spawn a thread that handles all messages received
+                messageReceiver.start();
+            }
         }
     }
 }

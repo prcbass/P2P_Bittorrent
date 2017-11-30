@@ -1,5 +1,6 @@
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
 public class Peer
 {
@@ -8,7 +9,7 @@ public class Peer
     private final int port;
     private boolean hasFile;
     private Socket socket;
-    private Bitfield bitfield;
+    private BitSet bitfield;
 
     Peer(int id, String hostname, int port, boolean hasFile, int bitfieldLength) throws IOException
     {
@@ -16,11 +17,11 @@ public class Peer
         this.hostname = hostname;
         this.port = port;
         this.hasFile = hasFile;
-        this.bitfield = new Bitfield(bitfieldLength);
+        this.bitfield = new BitSet(bitfieldLength);
 
         // bitfield should be all 1s if this peer has the file
         if (this.hasFile)
-            this.bitfield.setAllBits();
+            this.bitfield.set(0, bitfieldLength, true);
     }
 
     public int GetId()
@@ -62,5 +63,10 @@ public class Peer
     public String toString()
     {
         return String.format("Peer %d: %s:%d %s", id, hostname, port, hasFile ? "Has file" : "No file");
+    }
+
+    public byte[] getBitField()
+    {
+        return this.bitfield.toByteArray();
     }
 }

@@ -16,6 +16,7 @@ public class MessageReceiver implements Runnable
 
     boolean handshakeReceived = false;
 
+
     MessageReceiver(int myPeerId, int peerId, Socket socket) throws IOException
     {
         this.myPeerId = myPeerId;
@@ -118,7 +119,7 @@ public class MessageReceiver implements Runnable
             }
             else
             {
-                // send bitfield
+                sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField());
                 System.out.printf("%d should send bitfield message to %d\n", myPeerId, peerId);
             }
         }
@@ -126,5 +127,13 @@ public class MessageReceiver implements Runnable
         {
             System.out.println("Invalid");
         }
+    }
+
+    public void sendMessage(int type, byte[] payload) throws IOException
+    {
+        output.writeInt(payload.length);
+        output.writeShort(type);
+        output.write(payload);
+        output.flush();
     }
 }
