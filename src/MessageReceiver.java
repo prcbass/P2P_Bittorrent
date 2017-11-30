@@ -38,7 +38,10 @@ public class MessageReceiver implements Runnable
             try
             {
                 if (input.available() == 0)
+                {
+                    //System.out.println("Nothing to read");
                     continue;
+                }
 
                 byte[] lenBytes = new byte[4];
                 input.readFully(lenBytes, 0, 4);
@@ -55,7 +58,6 @@ public class MessageReceiver implements Runnable
                 else
                 {
                     int msgLength = Utility.byteArrayToInt(lenBytes);
-                    System.out.println("Got message of length: " + msgLength + " from" + " PeerID: " + peerId);
 
                     switch (msgType[0])
                     {
@@ -76,6 +78,10 @@ public class MessageReceiver implements Runnable
                             break;
                         case Message.BITFIELD:
                             System.out.printf("%d received BITFIELD from %d\n", myPeerId, peerId);
+                            //System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().length +") to " + peerId);
+                            byte[] payload = new byte[msgLength - 1];
+                            input.readFully(payload, 0, payload.length);
+                            //sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField());
                             break;
                         case Message.REQUEST:
                             System.out.printf("%d received REQUEST from %d\n", myPeerId, peerId);
@@ -124,7 +130,7 @@ public class MessageReceiver implements Runnable
             {
                 System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().length +") to " + peerId);
                 sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField());
-                //System.out.printf("%d should send bitfield message to %d\n", myPeerId, peerId);
+                //output.close();
             }
         }
         else
@@ -133,14 +139,11 @@ public class MessageReceiver implements Runnable
         }
     }
 
-    public void sendMessage(int type, byte[] payload) throws IOException
+    public synchronized void sendMessage(int type, byte[] payload) throws IOException
     {
-        System.out.println("Output buffer at start: " + output.size());
         output.writeInt(payload.length + 1);
         output.writeByte(type);
         output.write(payload);
-        System.out.println("Output buffer at end: " + output.size());
         output.flush();
-        System.out.println("Output buffer after flush: " + output.size());
     }
 }
