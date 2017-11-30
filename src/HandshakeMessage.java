@@ -4,6 +4,9 @@ import java.io.*;
 public class HandshakeMessage 
 {
 	public final static String header = "P2PFILESHARINGPROJ";
+	public final static byte[] headerBytes = header.getBytes();
+
+	public final static byte[] zeroBytes = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	private int ID;
 	
 	public HandshakeMessage(int ID) 
@@ -19,9 +22,16 @@ public class HandshakeMessage
 		out.writeLong(0);
 		out.writeShort(0);
 		out.writeInt(ID);
-		System.out.println("Created handshake message of size " + out.size());
 		out.flush();
-		out.close();
+	}
+	
+	public void send(OutputStream output) throws IOException {
+		DataOutputStream out = new DataOutputStream(output);
+		out.writeBytes(header);
+		out.writeLong(0);
+		out.writeShort(0);
+		out.writeInt(ID);
+		out.flush();
 	}
 	
 	public int getID() 

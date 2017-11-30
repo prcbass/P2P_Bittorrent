@@ -38,9 +38,14 @@ public class CustomLogger
 		logger.addHandler(fileHandler);        
 	}
 	
-	public void TCPConnection(int id2)
+	public void TCPMakeConnection(int id2)
 	{
 		logger.info("Peer " + id + " makes a connection to Peer " + id2 + "\n");
+	}
+
+	public void TCPIsConnected(int id2)
+	{
+		logger.info("Peer " + id + " is connected from Peer " + id2 + "\n");
 	}
 	
 	public void changeOfPreferredNeighbors(ArrayList<Peer> neighbors)

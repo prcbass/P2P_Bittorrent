@@ -1,13 +1,10 @@
 import java.net.*;
 import java.io.*;
-import java.util.*;
+import java.util.concurrent.*;
 
 class peerProcess
 {
-    private static Config config;
-
-    // this is a hack caused by the fact that handshake MSGs only contain 1 peerID - the peer we want to connect to.
-    private static ArrayList<String> handshakeHosts = new ArrayList<String>();
+    private static CustomLogger logger;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException
     {
@@ -18,11 +15,12 @@ class peerProcess
         }
 
         int myPeerId = Integer.parseInt(args[0]);
+        logger = new CustomLogger(myPeerId);
 
         // load Common.cfg
         try
         {
-            config = new Config("Common.cfg");
+            Config.initConfig("Common.cfg");
         }
         catch (Exception e)
         {
@@ -35,7 +33,7 @@ class peerProcess
         // create peer objects and open a socket for each one
         try
         {
-            config.initPeers("peerInfo.cfg", myPeerId);
+            Config.initPeers("peerInfo.cfg", myPeerId);
         }
         catch (Exception e)
         {
@@ -44,97 +42,44 @@ class peerProcess
             return;
         }
 
-        //
-        ServerSocket listener = new ServerSocket(config.getServerListenPort());
+        // open a socket for accepting requests
+        ServerSocket listener = new ServerSocket(Config.getServerListenPort());
         System.out.println("Listening on port " + listener.getLocalPort());
 
-        // send a handshake message to all peers listed before us in peerInfo.cfg
-        for (int peerId : config.peers.keySet())
+        // set up sockets for all peers and send handshakes to peers with lower peerIDs than us
+        for (int peerId : Config.peers.keySet())
         {
-            if (peerId == myPeerId)
+            // we need to make first contact with peers that have a smaller peerId
+            if (peerId < myPeerId)
             {
-                System.out.println("breaking cause peer" + peerId + " is us");
-                break;
+                Config.peers.get(peerId).OpenSocket();
+                logger.TCPMakeConnection(peerId);
+
+                // make first contact by sending a handshake message
+                HandshakeMessage handshake = new HandshakeMessage(myPeerId);
+                handshake.send(Config.peers.get(peerId).GetSocket());
+                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, Config.peers.get(peerId).GetSocket(), true, logger));
+
+                // spawn a thread that handles all messages received
+                messageReceiver.start();
             }
 
-            config.peers.get(peerId).OpenSocket();
-            HandshakeMessage handshake = new HandshakeMessage(peerId);
-            handshake.send(config.peers.get(peerId).GetSocket());
+            // we wait for first contact from peers with a bigger peerId
+            else if (peerId != myPeerId)
+            {
+                logger.TCPIsConnected(peerId);
+                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, listener.accept(), false, logger));
 
-            // keep track of who we have already sent a handshake message to
-            //config.peers.get(peerId).SetSentHandshake(true);
-            handshakeHosts.add(config.peers.get(peerId).GetHostname());
+                // spawn a thread that handles all messages received
+                messageReceiver.start();
+            }
         }
 
-        // wait for responses and react accordingly
-        while (true)
-        {
-            Socket acceptedSocket = listener.accept();
-            // contains Data field of the most recently received TCP packet as a stream
-            InputStream response = new DataInputStream(acceptedSocket.getInputStream());
-            // convert to byte array
-            byte[] packetBytes = Utility.inputStreamToByteArray(response);
+        ScheduledExecutorService  ses = Executors.newScheduledThreadPool(1);
+        // select preferred neighbors
+        ses.scheduleAtFixedRate(new SelectPreferedNeighbors(myPeerId, ), 0, Config.getUnchokingInterval(), TimeUnit.SECONDS);
 
-            // see if response is a message or a handshake
-            System.out.println(new String(Arrays.copyOfRange(packetBytes, 0, 18)));
-            byte[] packetHeader = Arrays.copyOfRange(packetBytes, 0, 18);
-            if (packetBytes.length == 32 && new String(packetHeader).equals(HandshakeMessage.header))
-            {
-                System.out.println("Got handshake");
-                int peerId = Utility.byteArrayToInt(Arrays.copyOfRange(packetBytes, 28, 32));
-
-                // this is a handshake meant for us
-                if (peerId == myPeerId)
-                {
-                    // if we sent a handshake already and just received one, send a bitfield message
-                    if (handshakeHosts.contains(acceptedSocket.getInetAddress().getHostName()))
-                    {
-                        System.out.println("We should send a bitfield msg here.");
-                    }
-                    else
-                    {
-                        config.peers.get(peerId).OpenSocket();
-                        HandshakeMessage handshake = new HandshakeMessage(peerId);
-                        handshake.send(config.peers.get(peerId).GetSocket());
-                        // keep track of who we have already sent a handshake message to
-                        //config.peers.get(peerId).SetSentHandshake(true);
-                        handshakeHosts.add(config.peers.get(peerId).GetHostname());
-
-                    }
-
-                }
-            }
-
-            // packet is not a handshake
-            else 
-            {
-                // init packet and set up its structure
-                Message m = new Message();
-                m.read(acceptedSocket);
-                System.out.printf("Received packet of type %s from %s\n", m.getType(), acceptedSocket.getInetAddress().getHostName());
-                switch(m.getType())
-                {
-                    case Message.CHOKE:
-                        break;
-                    case Message.UNCHOKE:
-                        break;
-                    case Message.INTERESTED:
-                        break;
-                    case Message.NOT_INTERESTED:
-                        break;
-                    case Message.HAVE:
-                        break;
-                    case Message.BITFIELD:
-                        break;
-                    case Message.REQUEST:
-                        break;
-                    case Message.PIECE:
-                        break;
-                    default:
-                        System.out.println("Received unknown packet type: " + m.getType() + "! Exiting...");
-                        return;
-                }
-            }
-        }
+        // select optimistically unchoked neighbor
+        ses.scheduleAtFixedRate(new SelectOptimisticNeighbor(myPeerId), 0, Config.getOptimisticUnchokingInterval(), TimeUnit.SECONDS);
     }
 }
