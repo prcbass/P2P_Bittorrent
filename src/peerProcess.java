@@ -57,7 +57,7 @@ class peerProcess
                 // make first contact by sending a handshake message
                 HandshakeMessage handshake = new HandshakeMessage(myPeerId);
                 handshake.send(Config.peers.get(peerId).GetSocket());
-                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, Config.peers.get(peerId).GetSocket()));
+                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, Config.peers.get(peerId).GetSocket(), true, logger));
 
                 // spawn a thread that handles all messages received
                 messageReceiver.start();
@@ -67,7 +67,7 @@ class peerProcess
             else if (peerId != myPeerId)
             {
                 logger.TCPIsConnected(peerId);
-                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, listener.accept()));
+                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, listener.accept(), false, logger));
 
                 // spawn a thread that handles all messages received
                 messageReceiver.start();

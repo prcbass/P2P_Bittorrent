@@ -14,10 +14,9 @@ public class MessageReceiver implements Runnable
 
     CustomLogger logger;
 
-    boolean handshakeReceived = false;
+    boolean handshakeReceived;
 
-
-    MessageReceiver(int myPeerId, int peerId, Socket socket) throws IOException
+    MessageReceiver(int myPeerId, int peerId, Socket socket, boolean handshakeReceived, CustomLogger logger) throws IOException
     {
         this.myPeerId = myPeerId;
         this.peerId = peerId;
@@ -27,7 +26,9 @@ public class MessageReceiver implements Runnable
         output = new DataOutputStream(socket.getOutputStream());
         output.flush();
 
-        logger = new CustomLogger(myPeerId);
+        this.logger = logger;
+
+        this.handshakeReceived = handshakeReceived;
     }
 
     public void run()
