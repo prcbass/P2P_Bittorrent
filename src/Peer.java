@@ -7,7 +7,6 @@ public class Peer
     private final int id;
     private final String hostname;
     private final int port;
-    private boolean hasFile;
     private Socket socket;
     private BitSet bitfield;
 
@@ -16,11 +15,10 @@ public class Peer
         this.id = id;
         this.hostname = hostname;
         this.port = port;
-        this.hasFile = hasFile;
         this.bitfield = new BitSet(bitfieldLength);
 
         // bitfield should be all 1s if this peer has the file
-        if (this.hasFile)
+        if (hasFile)
             this.bitfield.set(0, bitfieldLength, true);
     }
 
@@ -41,18 +39,12 @@ public class Peer
 
     public boolean HasFile()
     {
-        return hasFile;
+        return this.bitfield.cardinality() == this.bitfield.size();
     }
 
     public Socket GetSocket()
     {
         return socket;
-    }
-
-    public void SetHasFile(boolean hasFile)
-    {
-        this.hasFile = hasFile;
-        return;
     }
 
     public void OpenSocket() throws IOException
@@ -62,7 +54,7 @@ public class Peer
 
     public String toString()
     {
-        return String.format("Peer %d: %s:%d %s", id, hostname, port, hasFile ? "Has file" : "No file");
+        return String.format("Peer %d: %s:%d %s", id, hostname, port, this.HasFile() ? "Has file" : "No file");
     }
 
     public BitSet getBitField()

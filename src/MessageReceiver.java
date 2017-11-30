@@ -19,19 +19,26 @@ public class MessageReceiver implements Runnable
 
     boolean hasSentBitfield = false;
 
+    // number of peers (including us) with the complete file
+    int finishedPeers = 0;
+
     MessageReceiver(int myPeerId, int peerId, Socket socket, boolean handshakeReceived, CustomLogger logger) throws IOException
     {
         this.myPeerId = myPeerId;
         this.peerId = peerId;
 
-        input = new DataInputStream(socket.getInputStream());
+        this.input = new DataInputStream(socket.getInputStream());
 
-        output = new DataOutputStream(socket.getOutputStream());
-        output.flush();
+        this.output = new DataOutputStream(socket.getOutputStream());
+        this.output.flush();
 
         this.logger = logger;
 
         this.handshakeReceived = handshakeReceived;
+
+        for (Peer p : Config.peers.values())
+            if (p.HasFile())
+                finishedPeers++;
     }
 
     public void run()
@@ -41,27 +48,13 @@ public class MessageReceiver implements Runnable
         {
             try
             {
-                if (input.available() == 0)
+                // check if all peers have the complete file
+                if (finishedPeers == Config.peers.size())
                 {
-                    System.out.print("Nothing to read, checking all peers...");
-                    int finishedPeers = 0;
                     for (Peer p : Config.peers.values())
-                    {
-                        if (p.getBitField().cardinality() == p.getBitField().length())
-                            finishedPeers++;
-                    }
-
-                    if (finishedPeers == Config.peers.size())
-                    {
-                        for (Peer p : Config.peers.values())
-                            p.GetSocket().close();
-                        System.out.println("Exiting! We're done.");
-                        System.exit(0);
-                    }
-                    else
-                    {
-                        System.out.println(Config.peers.size() - finishedPeers + " peers are not done yet.");
-                    }
+                        p.GetSocket().close();
+                    System.out.println("Exiting! We're done.");
+                    System.exit(0);
                 }
 
                 byte[] lenBytes = new byte[4];
@@ -188,6 +181,9 @@ public class MessageReceiver implements Runnable
             System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
             sendMessage(Message.NOT_INTERESTED);
         }
+
+        if (Config.peers.get(peerId).HasFile())
+            finishedPeers++;
     }
 
     public synchronized void sendMessage(int type, byte[] payload) throws IOException
