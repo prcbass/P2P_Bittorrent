@@ -16,6 +16,9 @@ public class Config
     static LinkedHashMap<Integer, Peer> peers;
     static private int serverListenPort;
 
+    // peerID of optimistically unchoked neighbor
+    static private int optimisticNeighbor;
+
 
     public static void initConfig(String commonFile) throws FileNotFoundException
     {
@@ -29,6 +32,18 @@ public class Config
         cfg.close();
 
         peers = new LinkedHashMap<Integer, Peer>();
+
+        optimisticNeighbor = 0;
+    }
+
+    public static int getOptimisticUnchokingInterval()
+    {
+        return optimisticUnchokingInterval;
+    }
+
+    public static int getUnchokingInterval()
+    {
+        return unchokingInterval;
     }
 
     public static void initPeers(String peerInfoFile, int myPeerId) throws IOException

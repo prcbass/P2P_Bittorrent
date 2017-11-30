@@ -1,5 +1,6 @@
 import java.net.*;
 import java.io.*;
+import java.util.concurrent.*;
 
 class peerProcess
 {
@@ -73,5 +74,12 @@ class peerProcess
                 messageReceiver.start();
             }
         }
+
+        ScheduledExecutorService  ses = Executors.newScheduledThreadPool(1);
+        // select preferred neighbors
+        ses.scheduleAtFixedRate(new SelectPreferedNeighbors(myPeerId, ), 0, Config.getUnchokingInterval(), TimeUnit.SECONDS);
+
+        // select optimistically unchoked neighbor
+        ses.scheduleAtFixedRate(new SelectOptimisticNeighbor(myPeerId), 0, Config.getOptimisticUnchokingInterval(), TimeUnit.SECONDS);
     }
 }
