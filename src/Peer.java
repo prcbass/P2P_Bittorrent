@@ -136,6 +136,6 @@ public class Peer
         String res = "";
         for (int i = 0; i < bitfield.length(); i++)
             res += bitfield.get(i) ? "1" : "0";
-        return res + bitfield.length();
+        return res + " " + bitfield.length();
     }
 }

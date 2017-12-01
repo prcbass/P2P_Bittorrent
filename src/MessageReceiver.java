@@ -145,6 +145,7 @@ public class MessageReceiver implements Runnable
             }
             else
             {
+                System.out.println("1002 bitfield: " + Config.peers.get(1002).PrintBitset());
                 if (Config.peers.get(myPeerId).getBitField().cardinality() > 0)
                 {
                     System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);

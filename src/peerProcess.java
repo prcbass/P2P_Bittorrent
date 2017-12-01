@@ -47,6 +47,7 @@ class peerProcess
         System.out.println("Listening on port " + listener.getLocalPort());
 
         Config.peers.get(1002).setBitInBitField(2, true);
+        System.out.println("1002 bitfield: " + Config.peers.get(1002).PrintBitset());
 
         // set up sockets for all peers and send handshakes to peers with lower peerIDs than us
         for (int peerId : Config.peers.keySet())
