@@ -27,13 +27,13 @@ public class refreshPreferedNeighbors implements Runnable
         // we have the complete file, choose neighbors randomly
         if (hasFile)
         {
-            System.out.println("DL Rate key size: " + downloadRates.keySet().size());
-
             List<Integer> peers = new ArrayList<Integer>(downloadRates.keySet());
             Collections.shuffle(peers);
             System.out.println("Creating neighborlist for " + myPeerId + " RANDOMLY");
-            System.out.println("New peers size: " + peers.size());
-            return peers.subList(0, neighborCount);
+            System.out.println(peers);
+            while (peers.size() > neighborCount)
+                peers.remove(0);
+            return peers;
         }
 
         // we don't have the complete file, choose neighbors based on highest download rate
@@ -64,8 +64,10 @@ public class refreshPreferedNeighbors implements Runnable
     public void run()
     {
         List<Integer> neighbors = getNeighborList(Config.peers.get(myPeerId).HasFile());
-        logger.changeOfPreferredNeighbors(neighbors);
+        //logger.changeOfPreferredNeighbors(neighbors);
 
+        System.out.println("run()");
+        System.out.println(neighbors);
         int unchokeCount = 0;
         for (int peerId : neighbors)
         {
