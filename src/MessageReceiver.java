@@ -43,19 +43,6 @@ public class MessageReceiver implements Runnable
 
     public void run()
     {
-        boolean socketNotReady = true;
-        System.out.print("Waiting for all peers to come online...");
-        while (socketNotReady)
-        {
-            socketNotReady = false;
-            for (Peer p : Config.peers.values())
-            {
-                if (p.getOutputStream() == null)
-                    socketNotReady = true;
-            }
-        }
-        System.out.println("Done");
-
         // handle different types of messages
         while (true)
         {
