@@ -223,6 +223,8 @@ public class MessageReceiver implements Runnable
         byte[] piece = Arrays.copyOfRange(payload, 4, payload.length);
         Utility.writePieceToFile(pieceIndex, piece, myPeerId);
 
+        Config.peers.get(myPeerId).setBitInBitField(pieceIndex, true);
+
         // after writing piece to file, send HAVE msg to everyone else
         for (int peerId : Config.peers.keySet())
         {
