@@ -9,6 +9,8 @@ public class Peer
     private final int port;
     private Socket socket;
     private BitSet bitfield;
+    boolean choked;
+    boolean interested;
 
     Peer(int id, String hostname, int port, boolean hasFile, int bitfieldLength) throws IOException
     {
@@ -20,6 +22,9 @@ public class Peer
         // bitfield should be all 1s if this peer has the file
         if (hasFile)
             this.bitfield.set(0, bitfieldLength, true);
+
+        this.choked = true;
+        this.interested = false;
     }
 
     public int GetId()

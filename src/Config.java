@@ -1,4 +1,3 @@
-import javax.rmi.CORBA.Util;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,7 +14,6 @@ public class Config
 
     static LinkedHashMap<Integer, Peer> peers;
     static private int serverListenPort;
-
 
     public static void initConfig(String commonFile) throws FileNotFoundException
     {
