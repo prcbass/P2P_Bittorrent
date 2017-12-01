@@ -66,7 +66,7 @@ public class refreshPreferedNeighbors implements Runnable
                 }
                 else
                 {
-                    System.out.println("Not unchoking " + peerId + " (already choked)");
+                    System.out.println("Not unchoking " + peerId + " (already unchoked)");
                 }
                 unchokeCount++;
             }

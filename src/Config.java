@@ -46,6 +46,21 @@ public class Config
         return optimisticNeighbor;
     }
 
+    public static int getPieceSizeInBytes()
+    {
+        return pieceSizeInBytes;
+    }
+
+    public static int getFileSizeInBytes()
+    {
+        return fileSizeInBytes;
+    }
+
+    public static String getFileName()
+    {
+        return fileName;
+    }
+
     public static void setOptimisticNeighbor(int myPeerId)
     {
         optimisticNeighbor = myPeerId;

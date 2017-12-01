@@ -95,6 +95,7 @@ public class MessageReceiver implements Runnable
                             break;
                         case Message.HAVE:
                             System.out.printf("%d received HAVE from %d\n", myPeerId, peerId);
+                            HandleHaveMsg(payload);
                             break;
                         case Message.BITFIELD:
                             System.out.printf("%d received BITFIELD from %d\n", myPeerId, peerId);
@@ -102,9 +103,11 @@ public class MessageReceiver implements Runnable
                             break;
                         case Message.REQUEST:
                             System.out.printf("%d received REQUEST from %d\n", myPeerId, peerId);
+                            HandleRequestMsg(payload);
                             break;
                         case Message.PIECE:
                             System.out.printf("%d received PIECE from %d\n", myPeerId, peerId);
+                            HandlePieceMsg(payload);
                             break;
                         default:
                             System.out.println("*ERROR*: Received unknown message type: " + msgType[0]);
@@ -210,5 +213,24 @@ public class MessageReceiver implements Runnable
     public synchronized void HandleChokeMsg(/*no payload*/) throws IOException
     {
         Config.peers.get(myPeerId).setChoked(true);
+    }
+
+    public synchronized void HandleRequestMsg(byte[] payload) throws IOException
+    {
+        int requestedPieceIndex = Utility.byteArrayToInt(payload);
+        byte[] pieceInBytes = Utility.getBytesForPiece(requestedPieceIndex, myPeerId);
+
+
+        Utility.sendMessage(output, Message.PIECE, requestedPieceIndex, pieceInBytes);
+    }
+
+    public synchronized void HandlePieceMsg(byte[] payload) throws IOException
+    {
+
+    }
+
+    public synchronized void HandleHaveMsg(byte[] payload) throws IOException
+    {
+
     }
 }

@@ -1,7 +1,4 @@
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.*;
@@ -117,5 +114,42 @@ public class Utility
 		output.writeInt(payload);
 		output.flush();
 	}
+
+	public synchronized static void sendMessage(DataOutputStream output, int type, int index, byte[] payload) throws IOException
+    {
+        output.writeInt(1);
+        output.writeByte(type);
+        output.writeInt(index);
+        output.write(payload);
+        output.flush();
+    }
+
+    public synchronized static byte[] getBytesForPiece(int requestedPieceIndex, int myPeerId) throws IOException
+    {
+        int pieceSize = Config.getPieceSizeInBytes();
+        int pieceCount = calculateBitfieldSizeInBytes(pieceSize, Config.getFileSizeInBytes());
+
+        byte[] piece = new byte[pieceSize];
+
+        int byteLength = pieceSize;
+
+        // open file in read only mode
+        String fileName = "./peer_" + myPeerId + "/" + Config.getFileName();
+        RandomAccessFile file = new RandomAccessFile(fileName, "r");
+
+        // the last piece in the file is likely to be smaller than the pieceSize
+        if (requestedPieceIndex == pieceCount - 1)
+        {
+            long fileSize = file.length();
+            if (fileSize % pieceSize != 0)
+                byteLength = (int)(fileSize % (long)pieceSize);
+        }
+
+        file.seek(pieceSize * requestedPieceIndex);
+        file.readFully(piece, 0, byteLength);
+        file.close();
+
+        return piece;
+    }
 
 }
