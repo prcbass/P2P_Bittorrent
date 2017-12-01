@@ -49,14 +49,31 @@ public class MessageReceiver implements Runnable
         {
             try
             {
-                // check if all peers have the complete file
+                /*// check if all peers have the complete file
                 if (finishedPeers == Config.peers.size())
                 {
                     System.out.println("Exiting! We're done.");
                     System.exit(0);
                 }
 
-                System.out.println("Finished peers: " + finishedPeers);
+                System.out.println("Finished peers: " + finishedPeers);*/
+
+                // if nothing is being sent to us, check if everyone is done and exit if so
+                if (input.available() == 0)
+                {
+                    int finishedPeers = 0;
+                    for (int pId : Config.peers.keySet())
+                    {
+                        if (Config.peers.get(pId).HasFile())
+                            finishedPeers++;
+                    }
+
+                    if (finishedPeers == Config.peers.size())
+                    {
+                        System.out.println("We're done!");
+                        System.exit(0);
+                    }
+                }
 
                 byte[] lenBytes = new byte[4];
                 input.readFully(lenBytes, 0, 4);
@@ -195,9 +212,6 @@ public class MessageReceiver implements Runnable
             System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
             Utility.sendMessage(output, Message.NOT_INTERESTED);
         }
-
-        /*if (Config.peers.get(peerId).HasFile())
-            finishedPeers++;*/
     }
 
     public synchronized void HandleUnchokeMsg(/*no payload*/) throws IOException
