@@ -75,7 +75,7 @@ public class Peer
 
     public void setChoked(boolean choked)
     {
-        System.out.printf("%d is now%s choked\n", id, choked ? "" : " not");
+        //System.out.printf("%d is now%s choked\n", id, choked ? "" : " not");
         this.choked = choked;
     }
 
@@ -86,7 +86,7 @@ public class Peer
 
     public void setInterested(boolean interested)
     {
-        System.out.printf("%d is now%s interested\n", id, interested ? "" : " not");
+        //System.out.printf("%d is now%s interested\n", id, interested ? "" : " not");
         this.interested = interested;
     }
 
@@ -109,10 +109,10 @@ public class Peer
     {
         if (this.bitfield.cardinality() == this.bitfield.length())
         {
-            System.out.println("Peer " + id + " has file");
+            //System.out.println("Peer " + id + " has file");
             return true;
         }
-        System.out.printf("Peer %d does not have file. (%d/%d)\n", id, this.bitfield.cardinality(), this.bitfield.length());
+        //System.out.printf("Peer %d does not have file. (%d/%d)\n", id, this.bitfield.cardinality(), this.bitfield.length());
         return false;
     }
 

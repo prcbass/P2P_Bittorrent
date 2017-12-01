@@ -29,8 +29,8 @@ public class refreshPreferedNeighbors implements Runnable
         {
             List<Integer> peers = new ArrayList<Integer>(downloadRates.keySet());
             Collections.shuffle(peers);
-            System.out.println("Creating neighborlist for " + myPeerId + " RANDOMLY");
-            System.out.println(peers);
+            //System.out.println("Creating neighborlist for " + myPeerId + " RANDOMLY");
+            //System.out.println(peers);
             while (peers.size() > neighborCount)
                 peers.remove(0);
             return peers;
@@ -39,7 +39,7 @@ public class refreshPreferedNeighbors implements Runnable
         // we don't have the complete file, choose neighbors based on highest download rate
         else
         {
-            System.out.println("Creating neighborlist for " + myPeerId + " BY DOWNLOAD RATE");
+            //System.out.println("Creating neighborlist for " + myPeerId + " BY DOWNLOAD RATE");
             // sort the linked list highest to low - https://stackoverflow.com/questions/12184378/sorting-linkedhashmap
             List<Map.Entry<Integer, Double>> entries = new ArrayList<Map.Entry<Integer, Double>>(downloadRates.entrySet());
             Collections.sort(entries, new Comparator<Map.Entry<Integer, Double>>() {
@@ -53,7 +53,7 @@ public class refreshPreferedNeighbors implements Runnable
                 sortedMap.put(entry.getKey(), entry.getValue());
             }
 
-            System.out.println(sortedMap.keySet());
+            //System.out.println(sortedMap.keySet());
             return new ArrayList<Integer>(sortedMap.keySet());
         }
     }
@@ -75,7 +75,7 @@ public class refreshPreferedNeighbors implements Runnable
                     // send unchoke
                     try {
                         Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.UNCHOKE);
-                        System.out.println("Sending UNCHOKE to " + peerId);
+                        //System.out.println("Sending UNCHOKE to " + peerId);
                         Config.peers.get(peerId).setChoked(false);
                     }
                     catch (Exception e){
@@ -84,7 +84,7 @@ public class refreshPreferedNeighbors implements Runnable
                 }
                 else
                 {
-                    System.out.println("Not unchoking " + peerId + " (already unchoked)");
+                    //System.out.println("Not unchoking " + peerId + " (already unchoked)");
                 }
                 unchokeCount++;
             }
@@ -95,7 +95,7 @@ public class refreshPreferedNeighbors implements Runnable
                     // send choke
                     try {
                         Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.CHOKE);
-                        System.out.println("Sending CHOKE to " + peerId);
+                        //System.out.println("Sending CHOKE to " + peerId);
                         Config.peers.get(peerId).setChoked(true);
                     }
                     catch (Exception e) {
@@ -104,7 +104,7 @@ public class refreshPreferedNeighbors implements Runnable
                 }
                 else
                 {
-                    System.out.println("Not choking optimistic neighbor " + peerId);
+                    //System.out.println("Not choking optimistic neighbor " + peerId);
                 }
             }
 

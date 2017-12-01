@@ -97,37 +97,37 @@ public class MessageReceiver implements Runnable
                     switch (msgType[0])
                     {
                         case Message.CHOKE:
-                            System.out.printf("%d received CHOKE from %d\n", myPeerId, peerId);
+                            //System.out.printf("%d received CHOKE from %d\n", myPeerId, peerId);
                             HandleChokeMsg();
                             break;
                         case Message.UNCHOKE:
-                            System.out.printf("%d received UNCHOKE from %d\n", myPeerId, peerId);
+                            //System.out.printf("%d received UNCHOKE from %d\n", myPeerId, peerId);
                             HandleUnchokeMsg();
                             break;
                         case Message.INTERESTED:
-                            System.out.printf("%d received INTERESTED from %d\n", myPeerId, peerId);
+                            //System.out.printf("%d received INTERESTED from %d\n", myPeerId, peerId);
                             Config.peers.get(peerId).setInterested(true);
                             logger.recievingInterested(peerId);
                             break;
                         case Message.NOT_INTERESTED:
-                            System.out.printf("%d received NOT_INTERESTED from %d\n", myPeerId, peerId);
+                            //System.out.printf("%d received NOT_INTERESTED from %d\n", myPeerId, peerId);
                             Config.peers.get(peerId).setInterested(false);
                             logger.recievingNotInterested(peerId);
                             break;
                         case Message.HAVE:
-                            System.out.printf("%d received HAVE from %d\n", myPeerId, peerId);
+                            //System.out.printf("%d received HAVE from %d\n", myPeerId, peerId);
                             HandleHaveMsg(payload);
                             break;
                         case Message.BITFIELD:
-                            System.out.printf("%d received BITFIELD from %d\n", myPeerId, peerId);
+                            //System.out.printf("%d received BITFIELD from %d\n", myPeerId, peerId);
                             HandleBitFieldMsg(payload);
                             break;
                         case Message.REQUEST:
-                            System.out.printf("%d received REQUEST from %d\n", myPeerId, peerId);
+                            //System.out.printf("%d received REQUEST from %d\n", myPeerId, peerId);
                             HandleRequestMsg(payload);
                             break;
                         case Message.PIECE:
-                            System.out.printf("%d received PIECE from %d\n", myPeerId, peerId);
+                            //System.out.printf("%d received PIECE from %d\n", myPeerId, peerId);
                             HandlePieceMsg(payload);
                             break;
                         default:
@@ -152,7 +152,7 @@ public class MessageReceiver implements Runnable
 
     public synchronized void handleHandshakeMsg(byte[] msgLen, byte[] msgType) throws IOException
     {
-        System.out.printf("%d received handshake from %d...", myPeerId, peerId);
+        //System.out.printf("%d received handshake from %d...", myPeerId, peerId);
 
         // Handshake messages are always 32 bytes
         byte[] otherBytes = new byte[27];
@@ -167,12 +167,12 @@ public class MessageReceiver implements Runnable
 
         if ((header.equals(HandshakeMessage.header) && id == peerId))
         {
-            System.out.println("Valid");
+            //System.out.println("Valid");
             if (!handshakeSent)
             {
                 handshakeSent = true;
 
-                System.out.println("Sending response handshake");
+                //System.out.println("Sending response handshake");
                 HandshakeMessage message = new HandshakeMessage(myPeerId);
                 message.send(output);
             }
@@ -181,7 +181,7 @@ public class MessageReceiver implements Runnable
                 //System.out.println("1002 bitfield: " + Config.peers.get(1002).PrintBitset());
                 /*if (Config.peers.get(myPeerId).getBitField().cardinality() > 0)
                 {*/
-                    System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
+                    //System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
                     Utility.sendMessage(output, Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
                     hasSentBitfield = true;
                 //}
@@ -193,7 +193,7 @@ public class MessageReceiver implements Runnable
         }
         else
         {
-            System.out.println("Invalid");
+            //System.out.println("Invalid");
         }
     }
 
@@ -202,7 +202,7 @@ public class MessageReceiver implements Runnable
         // reply to a bitfield msg with our own bitfield if we haven't sent it before
         if (!hasSentBitfield/* && Config.peers.get(myPeerId).getBitField().cardinality() > 0*/)
         {
-            System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
+            //System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
             Utility.sendMessage(output, Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
             hasSentBitfield = true;
         }
@@ -212,12 +212,12 @@ public class MessageReceiver implements Runnable
 
         if (Utility.shouldBeInterested(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField()))
         {
-            System.out.println("Sending interested msg from " + myPeerId + " to " + peerId);
+            //System.out.println("Sending interested msg from " + myPeerId + " to " + peerId);
             Utility.sendMessage(output, Message.INTERESTED);
         }
         else
         {
-            System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
+            //System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
             Utility.sendMessage(output, Message.NOT_INTERESTED);
         }
     }
@@ -238,7 +238,7 @@ public class MessageReceiver implements Runnable
 
     public synchronized void HandleRequestMsg(byte[] payload) throws IOException
     {
-        System.out.println("HandleReq: payload length: " + payload.length);
+        //System.out.println("HandleReq: payload length: " + payload.length);
         int requestedPieceIndex = Utility.byteArrayToInt(payload);
         byte[] pieceInBytes = Utility.getBytesForPiece(requestedPieceIndex, myPeerId);
         Utility.sendMessage(output, Message.PIECE, requestedPieceIndex, pieceInBytes);
@@ -288,7 +288,7 @@ public class MessageReceiver implements Runnable
         // if we don't need anything from this peer sent them a NOT_INTERESTED msg
         if (possiblePieces.size() == 0)
         {
-            System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
+            //System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
             Utility.sendMessage(output, Message.NOT_INTERESTED);
             return;
         }
@@ -296,7 +296,7 @@ public class MessageReceiver implements Runnable
         int size = possiblePieces.size();
 
         int requestedPiece = possiblePieces.get(generator.nextInt(size));
-        System.out.println("Sending request to " + peerId + " for piece #" + requestedPiece);
+        //System.out.println("Sending request to " + peerId + " for piece #" + requestedPiece);
         Utility.sendMessage(output, Message.REQUEST, requestedPiece);
     }
 }
