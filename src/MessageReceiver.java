@@ -226,11 +226,21 @@ public class MessageReceiver implements Runnable
 
     public synchronized void HandlePieceMsg(byte[] payload) throws IOException
     {
-        // after writing piece to file, send HAVE msg
+        int pieceIndex = Utility.byteArrayToInt(Arrays.copyOfRange(payload, 0, 4));
+        byte[] piece = Arrays.copyOfRange(payload, 4, payload.length);
+        Utility.writePieceToFile(pieceIndex, piece, myPeerId);
+
+        // after writing piece to file, send HAVE msg to everyone else
+        for (int peerId : Config.peers.keySet())
+        {
+            if (peerId != myPeerId)
+                Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.HAVE, pieceIndex);
+        }
     }
 
     public synchronized void HandleHaveMsg(byte[] payload) throws IOException
     {
-
+        int pieceIndex = Utility.byteArrayToInt(payload);
+        Config.peers.get(peerId).setBitInBitField(pieceIndex, true);
     }
 }

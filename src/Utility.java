@@ -152,4 +152,30 @@ public class Utility
         return piece;
     }
 
+    public synchronized static void writePieceToFile(int pieceIndex, byte[] piece, int myPeerId) throws IOException
+    {
+        int pieceSize = Config.getPieceSizeInBytes();
+        int pieceCount = calculateBitfieldSizeInBytes(pieceSize, Config.getFileSizeInBytes());
+
+        int byteLength = pieceSize;
+
+        // open file in read only mode
+        String fileName = "./peer_" + myPeerId + "/" + Config.getFileName();
+        RandomAccessFile file = new RandomAccessFile(fileName, "rw");
+
+        // the last piece in the file is likely to be smaller than the pieceSize
+        if (pieceIndex == pieceCount - 1)
+        {
+            long fileSize = file.length();
+            if (fileSize % pieceSize != 0)
+                byteLength = (int)(fileSize % (long)pieceSize);
+        }
+
+        file.seek(pieceSize * pieceIndex);
+        file.write(piece, 0, byteLength);
+        file.close();
+
+        return;
+    }
+
 }
