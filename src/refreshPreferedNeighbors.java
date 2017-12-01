@@ -42,14 +42,22 @@ public class refreshPreferedNeighbors implements Runnable
                     Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.UNCHOKE);
                     System.out.println("Sending UNCHOKE to " + peerId);
                 }
+                else
+                {
+                    System.out.println("Not unchoking " + peerId + " (already choked)");
+                }
             }
             else
             {
-                if (peerId != Config.getOptimisticUnchokedNeighborId())
+                if (peerId != Config.getOptimisticNeighbor())
                 {
                     // send choke
                     Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.CHOKE);
                     System.out.println("Sending CHOKE to " + peerId);
+                }
+                else
+                {
+                    System.out.println("Not choking optimistic neighbor " + peerId);
                 }
             }
         }
