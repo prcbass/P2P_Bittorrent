@@ -39,6 +39,11 @@ public class Config
         return unchokingInterval;
     }
 
+    public static int getNumberOfPreferredNeighbors()
+    {
+        return numberOfPreferredNeighbors;
+    }
+
     public static void initPeers(String peerInfoFile, int myPeerId) throws IOException
     {
         Scanner peerInfo = new Scanner(new FileReader(peerInfoFile));

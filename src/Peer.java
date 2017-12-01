@@ -12,6 +12,9 @@ public class Peer
     boolean choked;
     boolean interested;
 
+    //download rate of the peer in B/mss
+    double downloadRateBytesPerMilisec;
+
     DataOutputStream outputStream;
     DataInputStream inputStream;
 
@@ -46,6 +49,31 @@ public class Peer
     public DataInputStream getInputStream()
     {
         return inputStream;
+    }
+
+    public double getDownloadRateBytesPerMilisec()
+    {
+        return downloadRateBytesPerMilisec;
+    }
+
+    public boolean isChoked()
+    {
+        return choked;
+    }
+
+    public void setChoked(boolean choked)
+    {
+        this.choked = choked;
+    }
+
+    public boolean isInterested()
+    {
+        return interested;
+    }
+
+    public void setInterested(boolean interested)
+    {
+        this.interested = interested;
     }
 
     public int GetId()

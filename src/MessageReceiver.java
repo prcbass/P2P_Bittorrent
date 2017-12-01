@@ -146,7 +146,7 @@ public class MessageReceiver implements Runnable
                 if (Config.peers.get(myPeerId).getBitField().cardinality() > 0)
                 {
                     System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
-                    sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
+                    Utility.sendMessage(output, Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
                     hasSentBitfield = true;
                 }
                 else
@@ -167,7 +167,7 @@ public class MessageReceiver implements Runnable
         if (!hasSentBitfield && Config.peers.get(myPeerId).getBitField().cardinality() > 0)
         {
             System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
-            sendMessage(Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
+            Utility.sendMessage(output, Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
             hasSentBitfield = true;
         }
 
@@ -176,30 +176,15 @@ public class MessageReceiver implements Runnable
         if (Utility.shouldBeInterested(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField()))
         {
             System.out.println("Sending interested msg from " + myPeerId + " to " + peerId);
-            sendMessage(Message.INTERESTED);
+            Utility.sendMessage(output, Message.INTERESTED);
         }
         else
         {
             System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
-            sendMessage(Message.NOT_INTERESTED);
+            Utility.sendMessage(output, Message.NOT_INTERESTED);
         }
 
         /*if (Config.peers.get(peerId).HasFile())
             finishedPeers++;*/
-    }
-
-    public synchronized void sendMessage(int type, byte[] payload) throws IOException
-    {
-        output.writeInt(payload.length + 1);
-        output.writeByte(type);
-        output.write(payload);
-        output.flush();
-    }
-
-    public synchronized void sendMessage(int type) throws IOException
-    {
-        output.writeInt(1);
-        output.writeByte(type);
-        output.flush();
     }
 }

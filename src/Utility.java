@@ -1,4 +1,5 @@
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -79,5 +80,21 @@ public class Utility
 
 		return false;
 	}
+
+
+    public synchronized static void sendMessage(DataOutputStream output, int type, byte[] payload) throws IOException
+    {
+        output.writeInt(payload.length + 1);
+        output.writeByte(type);
+        output.write(payload);
+        output.flush();
+    }
+
+    public synchronized static void sendMessage(DataOutputStream output, int type) throws IOException
+    {
+        output.writeInt(1);
+        output.writeByte(type);
+        output.flush();
+    }
 
 }
