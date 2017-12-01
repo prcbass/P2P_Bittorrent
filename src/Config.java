@@ -11,6 +11,7 @@ public class Config
     static private String fileName;
     static private int fileSizeInBytes;
     static private int pieceSizeInBytes;
+    static private int optimisticNeighbor;
 
     static LinkedHashMap<Integer, Peer> peers;
     static private int serverListenPort;
@@ -24,6 +25,7 @@ public class Config
         fileName = cfg.nextLine().split(" ")[1].trim();
         fileSizeInBytes = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
         pieceSizeInBytes = Integer.parseInt(cfg.nextLine().split(" ")[1].trim());
+        optimisticNeighbor = 0;
         cfg.close();
 
         peers = new LinkedHashMap<Integer, Peer>();
@@ -38,6 +40,17 @@ public class Config
     {
         return unchokingInterval;
     }
+    
+    public static int getOptimisticNeighbor()
+    {
+        return optimisticNeighbor;
+    }
+
+    public static void setOptimisticNeighbor(int myPeerId)
+    {
+        optimisticNeighbor = myPeerId;
+    }
+
 
     public static int getNumberOfPreferredNeighbors()
     {
