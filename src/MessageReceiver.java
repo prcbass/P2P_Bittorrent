@@ -1,5 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
@@ -133,6 +134,13 @@ public class MessageReceiver implements Runnable
                             System.out.println("*ERROR*: Received unknown message type: " + msgType[0]);
                     }
                 }
+            }
+
+            // EOFException will happen when the input stream finishes (because one peer has initiated the exit process)
+            catch (EOFException e)
+            {
+                System.out.println("We're done!");
+                break;
             }
 
             catch (Exception e) {
