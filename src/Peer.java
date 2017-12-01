@@ -129,7 +129,7 @@ public class Peer
     public void setBitfield(byte[] bytes)
     {
         BitSet bits = BitSet.valueOf(bytes);
-        boolean[] bools = new boolean[bytes.length * 8];
+        boolean[] bools = new boolean[bitfield.length()];
         for (int i = bits.nextSetBit(0); i != -1; i = bits.nextSetBit(i+1)) {
             bools[i] = true;
         }

@@ -46,19 +46,6 @@ public class Utility
 		
 		return numPieces;
 	}
-	
-	//gives you byte array with all 0 bytes
-	public static byte[] getEmptyByteArray(int byteFieldSizeInBytes) {
-		byte[] empty = new byte[byteFieldSizeInBytes];
-		Arrays.fill(empty, (byte) 0);
-		return empty;
-	}
-	
-	public static byte[] getFullByteArray(int byteFieldSizeInBytes) {
-		byte[] full = new byte[byteFieldSizeInBytes];
-		Arrays.fill(full, (byte) 1);
-		return full;
-	}
 
 	// returns true if the BitSet 'them' has a 1 in an index that 'us' does not
 	public static boolean shouldBeInterested(Bitfield us, Bitfield them)

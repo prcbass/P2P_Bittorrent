@@ -64,10 +64,6 @@ public class refreshPreferedNeighbors implements Runnable
     public void run()
     {
         List<Integer> neighbors = getNeighborList(Config.peers.get(myPeerId).HasFile());
-        //logger.changeOfPreferredNeighbors(neighbors);
-
-        System.out.println("run()");
-        System.out.println(neighbors);
         int unchokeCount = 0;
         for (int peerId : neighbors)
         {
