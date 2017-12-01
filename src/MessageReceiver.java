@@ -201,14 +201,7 @@ public class MessageReceiver implements Runnable
     {
         Config.peers.get(myPeerId).setChoked(false);
 
-        ArrayList<Integer> possiblePieces = Utility.getRequestPieces(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField());
-        Random generator = new Random();
-        int size = possiblePieces.size();
-
-        // reply to unchoke msg with a Request msg
-        int requestedPiece = possiblePieces.get(generator.nextInt(size));
-        System.out.println("Sending request to " + peerId + " for piece #" + requestedPiece);
-        Utility.sendMessage(output, Message.REQUEST, requestedPiece);
+        requestNewPiece();
     }
 
     public synchronized void HandleChokeMsg(/*no payload*/) throws IOException
@@ -236,11 +229,29 @@ public class MessageReceiver implements Runnable
             if (peerId != myPeerId)
                 Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.HAVE, pieceIndex);
         }
+
+        requestNewPiece();
     }
 
     public synchronized void HandleHaveMsg(byte[] payload) throws IOException
     {
         int pieceIndex = Utility.byteArrayToInt(payload);
         Config.peers.get(peerId).setBitInBitField(pieceIndex, true);
+    }
+
+    public synchronized void requestNewPiece() throws IOException
+    {
+        ArrayList<Integer> possiblePieces = Utility.getRequestPieces(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField());
+        if (possiblePieces.size() == 0)
+        {
+            System.out.println("NO MORE PIECES LEFT TO REQUEST");
+            return;
+        }
+        Random generator = new Random();
+        int size = possiblePieces.size();
+
+        int requestedPiece = possiblePieces.get(generator.nextInt(size));
+        System.out.println("Sending request to " + peerId + " for piece #" + requestedPiece);
+        Utility.sendMessage(output, Message.REQUEST, requestedPiece);
     }
 }
