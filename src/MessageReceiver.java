@@ -143,17 +143,17 @@ public class MessageReceiver implements Runnable
             }
             else
             {
-                System.out.println("1002 bitfield: " + Config.peers.get(1002).PrintBitset());
-                if (Config.peers.get(myPeerId).getBitField().cardinality() > 0)
-                {
+                //System.out.println("1002 bitfield: " + Config.peers.get(1002).PrintBitset());
+                /*if (Config.peers.get(myPeerId).getBitField().cardinality() > 0)
+                {*/
                     System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
                     Utility.sendMessage(output, Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
                     hasSentBitfield = true;
-                }
-                else
+                //}
+                /*else
                 {
                     System.out.println("Didn't send bitfield to " + peerId + ". (Bitfield is all 0s)");
-                }
+                }*/
             }
         }
         else
@@ -165,14 +165,15 @@ public class MessageReceiver implements Runnable
     public synchronized void HandleBitFieldMsg(byte[] payload) throws IOException
     {
         // reply to a bitfield msg with our own bitfield if we haven't sent it before
-        if (!hasSentBitfield && Config.peers.get(myPeerId).getBitField().cardinality() > 0)
+        if (!hasSentBitfield/* && Config.peers.get(myPeerId).getBitField().cardinality() > 0*/)
         {
             System.out.println("Sending bitfield " + Config.peers.get(myPeerId).PrintBitset() + "(" + Config.peers.get(myPeerId).getBitField().toByteArray().length + ") to " + peerId);
             Utility.sendMessage(output, Message.BITFIELD, Config.peers.get(myPeerId).getBitField().toByteArray());
             hasSentBitfield = true;
         }
 
-        Config.peers.get(peerId).setBitfield(BitSet.valueOf(payload));
+        if (payload.length > 0)
+            Config.peers.get(peerId).setBitfield(BitSet.valueOf(payload));
 
         if (Utility.shouldBeInterested(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField()))
         {
