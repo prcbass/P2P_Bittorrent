@@ -14,7 +14,6 @@ public class refreshOptimisticNeighbor implements Runnable
             if(Config.peers.get(id).choked &&
             		Config.peers.get(id).interested){
             	chokedAndInterestedPeerIds.add(Config.peers.get(id).GetId());
-            	break;
         	}
         }
         
