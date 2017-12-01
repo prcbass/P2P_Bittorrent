@@ -82,7 +82,7 @@ class peerProcess
         }
 
         ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-        ses.scheduleAtFixedRate(new refreshPreferedNeighbors(Config.getNumberOfPreferredNeighbors()), 0, Config.getUnchokingInterval(), TimeUnit.SECONDS);
+        ses.scheduleAtFixedRate(new refreshPreferedNeighbors(Config.getNumberOfPreferredNeighbors(), myPeerId), 0, Config.getUnchokingInterval(), TimeUnit.SECONDS);
         ses.scheduleAtFixedRate(new refreshOptimisticNeighbor(), 0, Config.getOptimisticUnchokingInterval(), TimeUnit.SECONDS);
     }
 }

@@ -7,7 +7,7 @@ public class refreshPreferedNeighbors implements Runnable
     private int neighborCount;
     private Map<Integer, Double> sortedMap;
 
-    refreshPreferedNeighbors(int neighborCount)
+    refreshPreferedNeighbors(int neighborCount, int myPeerId)
     {
         System.out.println("refreshPreferedNeighbors: ");
         this.neighborCount = neighborCount;
@@ -16,7 +16,7 @@ public class refreshPreferedNeighbors implements Runnable
         LinkedHashMap<Integer, Double> downloadRates = new LinkedHashMap<>();
         for (int peerId : Config.peers.keySet())
         {
-            //if (Config.peers.get(peerId).isInterested())
+            if (Config.peers.get(peerId).isInterested() && peerId != myPeerId)
                 downloadRates.put(peerId, Config.peers.get(peerId).getDownloadRateBytesPerMilisec());
         }
         System.out.print(downloadRates.size());
@@ -51,6 +51,7 @@ public class refreshPreferedNeighbors implements Runnable
                     try {
                         Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.UNCHOKE);
                         System.out.println("Sending UNCHOKE to " + peerId);
+                        Config.peers.get(peerId).setChoked(false);
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -70,6 +71,7 @@ public class refreshPreferedNeighbors implements Runnable
                     try {
                         Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.CHOKE);
                         System.out.println("Sending CHOKE to " + peerId);
+                        Config.peers.get(peerId).setChoked(true);
                     }
                     catch (Exception e) {
                         e.printStackTrace();

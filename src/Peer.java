@@ -63,6 +63,7 @@ public class Peer
 
     public void setChoked(boolean choked)
     {
+        System.out.printf("%d is now%s choked\n", id, choked ? "" : " not");
         this.choked = choked;
     }
 
@@ -73,6 +74,7 @@ public class Peer
 
     public void setInterested(boolean interested)
     {
+        System.out.printf("%d is now%s choked\n", id, interested ? "" : " not");
         this.interested = interested;
     }
 
