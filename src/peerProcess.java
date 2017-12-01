@@ -33,7 +33,7 @@ class peerProcess
         // create peer objects and open a socket for each one
         try
         {
-            Config.initPeers("peerInfo.cfg", myPeerId);
+            Config.initPeers("PeerInfo.cfg", myPeerId);
         }
         catch (Exception e)
         {

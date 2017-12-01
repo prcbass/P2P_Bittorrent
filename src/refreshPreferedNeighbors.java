@@ -58,9 +58,6 @@ public class refreshPreferedNeighbors implements Runnable
         }
     }
 
-    /*
-    * TODO: if we have the complete file, we should choose peers randomly instead of by download rate
-    * */
     public void run()
     {
         List<Integer> neighbors = getNeighborList(Config.peers.get(myPeerId).HasFile());
