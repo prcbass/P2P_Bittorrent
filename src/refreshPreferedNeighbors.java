@@ -9,15 +9,17 @@ public class refreshPreferedNeighbors implements Runnable
 
     refreshPreferedNeighbors(int neighborCount)
     {
+        System.out.println("refreshPreferedNeighbors: ");
         this.neighborCount = neighborCount;
 
         // create linked list of interested peerID/download rate pairs
         LinkedHashMap<Integer, Double> downloadRates = new LinkedHashMap<>();
         for (int peerId : Config.peers.keySet())
         {
-            if (Config.peers.get(peerId).isInterested())
+            //if (Config.peers.get(peerId).isInterested())
                 downloadRates.put(peerId, Config.peers.get(peerId).getDownloadRateBytesPerMilisec());
         }
+        System.out.print(downloadRates.size());
 
         // sort the linked list highest to low - https://stackoverflow.com/questions/12184378/sorting-linkedhashmap
         List<Map.Entry<Integer, Double>> entries = new ArrayList<Map.Entry<Integer, Double>>(downloadRates.entrySet());
@@ -26,6 +28,7 @@ public class refreshPreferedNeighbors implements Runnable
                 return -1 * a.getValue().compareTo(b.getValue());
             }
         });
+        System.out.print(entries.size());
         sortedMap = new LinkedHashMap<Integer, Double>();
         for (Map.Entry<Integer, Double> entry : entries) {
             sortedMap.put(entry.getKey(), entry.getValue());
@@ -35,7 +38,7 @@ public class refreshPreferedNeighbors implements Runnable
 
     public void run()
     {
-        System.out.println("refreshPreferedNeighbors: " + sortedMap.size());
+        System.out.println(sortedMap.size());
         int unchokeCount = 0;
         for (int peerId : sortedMap.keySet())
         {
