@@ -74,7 +74,7 @@ public class Peer
 
     public void setInterested(boolean interested)
     {
-        System.out.printf("%d is now%s choked\n", id, interested ? "" : " not");
+        System.out.printf("%d is now%s interested\n", id, interested ? "" : " not");
         this.interested = interested;
     }
 

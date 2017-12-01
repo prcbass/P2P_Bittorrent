@@ -112,8 +112,6 @@ public class MessageReceiver implements Runnable
                 e.printStackTrace();
                 break;
             }
-
-
         }
     }
 

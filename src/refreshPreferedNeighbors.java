@@ -1,21 +1,29 @@
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.*;
 
 public class refreshPreferedNeighbors implements Runnable
 {
     private int neighborCount;
+    private int myPeerId;
     private Map<Integer, Double> sortedMap;
 
     refreshPreferedNeighbors(int neighborCount, int myPeerId)
     {
-        System.out.println("refreshPreferedNeighbors: ");
         this.neighborCount = neighborCount;
+        this.myPeerId = myPeerId;
+    }
+
+    public void run()
+    {
+        System.out.println("refreshPreferedNeighbors: ");
 
         // create linked list of interested peerID/download rate pairs
         LinkedHashMap<Integer, Double> downloadRates = new LinkedHashMap<>();
         for (int peerId : Config.peers.keySet())
         {
+            if (peerId != myPeerId)
+                System.out.println(Config.peers.get(peerId).getOutputStream().size());
+
             if (Config.peers.get(peerId).isInterested() && peerId != myPeerId)
                 downloadRates.put(peerId, Config.peers.get(peerId).getDownloadRateBytesPerMilisec());
         }
@@ -34,10 +42,6 @@ public class refreshPreferedNeighbors implements Runnable
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 
-    }
-
-    public void run()
-    {
         System.out.println(sortedMap.size());
         int unchokeCount = 0;
         for (int peerId : sortedMap.keySet())
