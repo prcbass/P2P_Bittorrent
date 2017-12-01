@@ -83,9 +83,11 @@ public class MessageReceiver implements Runnable
                             break;
                         case Message.INTERESTED:
                             System.out.printf("%d received INTERESTED from %d\n", myPeerId, peerId);
+                            Config.peers.get(peerId).setInterested(true);
                             break;
                         case Message.NOT_INTERESTED:
                             System.out.printf("%d received NOT_INTERESTED from %d\n", myPeerId, peerId);
+                            Config.peers.get(peerId).setInterested(false);
                             break;
                         case Message.HAVE:
                             System.out.printf("%d received HAVE from %d\n", myPeerId, peerId);

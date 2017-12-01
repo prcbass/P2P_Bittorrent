@@ -126,6 +126,11 @@ public class Peer
         this.bitfield = bitfield;
     }
 
+    public void setBitInBitField(int index, boolean value)
+    {
+        this.bitfield.set(index, value);
+    }
+
     public String PrintBitset()
     {
         String res = "";

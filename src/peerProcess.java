@@ -46,6 +46,8 @@ class peerProcess
         ServerSocket listener = new ServerSocket(Config.getServerListenPort());
         System.out.println("Listening on port " + listener.getLocalPort());
 
+        Config.peers.get(1002).setBitInBitField(2, true);
+
         // set up sockets for all peers and send handshakes to peers with lower peerIDs than us
         for (int peerId : Config.peers.keySet())
         {

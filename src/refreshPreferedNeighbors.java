@@ -5,8 +5,9 @@ import java.util.*;
 public class refreshPreferedNeighbors implements Runnable
 {
     private int neighborCount;
+    private Map<Integer, Double> sortedMap;
 
-    refreshPreferedNeighbors(int neighborCount) throws IOException
+    refreshPreferedNeighbors(int neighborCount)
     {
         this.neighborCount = neighborCount;
 
@@ -25,11 +26,16 @@ public class refreshPreferedNeighbors implements Runnable
                 return -1 * a.getValue().compareTo(b.getValue());
             }
         });
-        Map<Integer, Double> sortedMap = new LinkedHashMap<Integer, Double>();
+        sortedMap = new LinkedHashMap<Integer, Double>();
         for (Map.Entry<Integer, Double> entry : entries) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 
+    }
+
+    public void run()
+    {
+        System.out.println("refreshPreferedNeighbors: " + sortedMap.size());
         int unchokeCount = 0;
         for (int peerId : sortedMap.keySet())
         {
@@ -39,21 +45,32 @@ public class refreshPreferedNeighbors implements Runnable
                 if (Config.peers.get(peerId).isChoked())
                 {
                     // send unchoke
-                    Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.UNCHOKE);
-                    System.out.println("Sending UNCHOKE to " + peerId);
+                    try {
+                        Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.UNCHOKE);
+                        System.out.println("Sending UNCHOKE to " + peerId);
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
                 else
                 {
                     System.out.println("Not unchoking " + peerId + " (already choked)");
                 }
+                unchokeCount++;
             }
             else
             {
                 if (peerId != Config.getOptimisticNeighbor())
                 {
                     // send choke
-                    Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.CHOKE);
-                    System.out.println("Sending CHOKE to " + peerId);
+                    try {
+                        Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.CHOKE);
+                        System.out.println("Sending CHOKE to " + peerId);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 else
                 {
@@ -61,13 +78,6 @@ public class refreshPreferedNeighbors implements Runnable
                 }
             }
         }
-
-    }
-
-    public void run()
-    {
-        System.out.println("refreshPreferedNeighbors");
-
     }
 }
 
