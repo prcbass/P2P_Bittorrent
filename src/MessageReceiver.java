@@ -207,6 +207,7 @@ public class MessageReceiver implements Runnable
 
         // reply to unchoke msg with a Request msg
         int requestedPiece = possiblePieces.get(generator.nextInt(size));
+        System.out.println("Sending request to " + peerId + " for piece #" + requestedPiece);
         Utility.sendMessage(output, Message.REQUEST, requestedPiece);
     }
 
@@ -217,16 +218,15 @@ public class MessageReceiver implements Runnable
 
     public synchronized void HandleRequestMsg(byte[] payload) throws IOException
     {
+        System.out.println("HandleReq: payload length: " + payload.length);
         int requestedPieceIndex = Utility.byteArrayToInt(payload);
         byte[] pieceInBytes = Utility.getBytesForPiece(requestedPieceIndex, myPeerId);
-
-
         Utility.sendMessage(output, Message.PIECE, requestedPieceIndex, pieceInBytes);
     }
 
     public synchronized void HandlePieceMsg(byte[] payload) throws IOException
     {
-
+        // after writing piece to file, send HAVE msg
     }
 
     public synchronized void HandleHaveMsg(byte[] payload) throws IOException
