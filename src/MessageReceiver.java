@@ -22,7 +22,7 @@ public class MessageReceiver implements Runnable
     boolean hasSentBitfield = false;
 
     // number of peers (including us) with the complete file
-    int finishedPeers = 0;
+    int finishedPeers;
 
     MessageReceiver(int myPeerId, int peerId, boolean handshakeSent, CustomLogger logger) throws IOException
     {
@@ -33,6 +33,7 @@ public class MessageReceiver implements Runnable
 
         this.handshakeSent = handshakeSent;
 
+        this.finishedPeers = 0;
         for (Peer p : Config.peers.values())
             if (p.HasFile())
                 finishedPeers++;
@@ -238,7 +239,8 @@ public class MessageReceiver implements Runnable
 
         logger.downloadingPiece(peerId, pieceIndex, Config.peers.get(myPeerId).getBitField().cardinality());
 
-        
+        Config.peers.get(myPeerId).increaseBytesDownloaded(piece.length);
+
         if (Config.peers.get(myPeerId).HasFile())
             logger.completionDownload();
 
@@ -250,6 +252,11 @@ public class MessageReceiver implements Runnable
         int pieceIndex = Utility.byteArrayToInt(payload);
         Config.peers.get(peerId).setBitInBitField(pieceIndex, true);
         logger.recievingHave(peerId, pieceIndex);
+
+        if (Config.peers.get(peerId).HasFile())
+        {
+            finishedPeers++;
+        }
     }
 
     public synchronized void requestNewPiece() throws IOException

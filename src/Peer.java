@@ -12,8 +12,8 @@ public class Peer
     boolean choked;
     boolean interested;
 
-    //download rate of the peer in B/mss
-    double downloadRateBytesPerMilisec;
+    // bytes downloaded during the current unchoke session
+    int bytesDownloaded;
 
     DataOutputStream outputStream;
     DataInputStream inputStream;
@@ -31,6 +31,8 @@ public class Peer
 
         this.choked = true;
         this.interested = false;
+
+        this.bytesDownloaded = 0;
     }
 
     public void initStreams(Socket socket) throws IOException
@@ -51,9 +53,19 @@ public class Peer
         return inputStream;
     }
 
-    public double getDownloadRateBytesPerMilisec()
+    public int getBytesDownloaded()
     {
-        return downloadRateBytesPerMilisec;
+        return bytesDownloaded;
+    }
+
+    public void increaseBytesDownloaded(int bytes)
+    {
+        this.bytesDownloaded += bytes;
+    }
+
+    public void resetBytesDownloaded()
+    {
+        this.bytesDownloaded = 0;
     }
 
     public boolean isChoked()
@@ -95,7 +107,7 @@ public class Peer
 
     public boolean HasFile()
     {
-        if (this.bitfield.cardinality() == this.bitfield.length() && this.bitfield.length() > 0)
+        if (this.bitfield.cardinality() == this.bitfield.length())
         {
             System.out.println("Peer " + id + " has file");
             return true;
