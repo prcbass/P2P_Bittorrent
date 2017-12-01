@@ -81,6 +81,19 @@ public class Utility
 		return false;
 	}
 
+	// returns an arraylist of all the indeces were 'us' has a 0 and 'them' has a 1
+	public static ArrayList<Integer> getRequestPieces(Bitfield us, Bitfield them)
+    {
+        ArrayList<Integer> res = new ArrayList<>();
+        for (int i = 0; i < us.length(); i++)
+        {
+            if (!us.get(i) && them.get(i))
+                res.add(i);
+        }
+
+        return res;
+    }
+
 
     public synchronized static void sendMessage(DataOutputStream output, int type, byte[] payload) throws IOException
     {

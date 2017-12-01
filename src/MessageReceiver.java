@@ -2,8 +2,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Random;
 
 public class MessageReceiver implements Runnable
 {
@@ -194,16 +196,19 @@ public class MessageReceiver implements Runnable
 
     public synchronized void HandleUnchokeMsg(/*no payload*/) throws IOException
     {
+        Config.peers.get(myPeerId).setChoked(false);
+
+        ArrayList<Integer> possiblePieces = Utility.getRequestPieces(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField());
+        Random generator = new Random();
+        int size = possiblePieces.size();
+
         // reply to unchoke msg with a Request msg
-        int requestedPiece = 0;
-
-
-
+        int requestedPiece = possiblePieces.get(generator.nextInt(size));
         Utility.sendMessage(output, Message.REQUEST, requestedPiece);
     }
 
     public synchronized void HandleChokeMsg(/*no payload*/) throws IOException
     {
-
+        Config.peers.get(myPeerId).setChoked(true);
     }
 }
