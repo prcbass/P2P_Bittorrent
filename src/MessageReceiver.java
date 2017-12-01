@@ -77,9 +77,11 @@ public class MessageReceiver implements Runnable
                     {
                         case Message.CHOKE:
                             System.out.printf("%d received CHOKE from %d\n", myPeerId, peerId);
+                            HandleChokeMsg();
                             break;
                         case Message.UNCHOKE:
                             System.out.printf("%d received UNCHOKE from %d\n", myPeerId, peerId);
+                            HandleUnchokeMsg();
                             break;
                         case Message.INTERESTED:
                             System.out.printf("%d received INTERESTED from %d\n", myPeerId, peerId);
@@ -173,7 +175,7 @@ public class MessageReceiver implements Runnable
         }
 
         if (payload.length > 0)
-            Config.peers.get(peerId).setBitfield(BitSet.valueOf(payload));
+            Config.peers.get(peerId).setBitfield(payload);
 
         if (Utility.shouldBeInterested(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField()))
         {
@@ -188,5 +190,20 @@ public class MessageReceiver implements Runnable
 
         /*if (Config.peers.get(peerId).HasFile())
             finishedPeers++;*/
+    }
+
+    public synchronized void HandleUnchokeMsg(/*no payload*/) throws IOException
+    {
+        // reply to unchoke msg with a Request msg
+        int requestedPiece = 0;
+
+
+
+        Utility.sendMessage(output, Message.REQUEST, requestedPiece);
+    }
+
+    public synchronized void HandleChokeMsg(/*no payload*/) throws IOException
+    {
+
     }
 }

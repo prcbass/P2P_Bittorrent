@@ -13,6 +13,9 @@ public class refreshPreferedNeighbors implements Runnable
         this.myPeerId = myPeerId;
     }
 
+    /*
+    * TODO: if we have the complete file, we should choose peers randomly instead of by download rate
+    * */
     public void run()
     {
         System.out.println("refreshPreferedNeighbors: ");

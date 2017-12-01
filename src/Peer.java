@@ -8,7 +8,7 @@ public class Peer
     private final String hostname;
     private final int port;
     //private Socket socket;
-    private BitSet bitfield;
+    private Bitfield bitfield;
     boolean choked;
     boolean interested;
 
@@ -23,7 +23,7 @@ public class Peer
         this.id = id;
         this.hostname = hostname;
         this.port = port;
-        this.bitfield = new BitSet(bitfieldLength);
+        this.bitfield = new Bitfield(bitfieldLength);
 
         // bitfield should be all 1s if this peer has the file
         if (hasFile)
@@ -103,29 +103,25 @@ public class Peer
         return false;
     }
 
-    /*public Socket GetSocket()
-    {
-        return socket;
-    }
-
-    public void OpenSocket() throws IOException
-    {
-        this.socket = new Socket(hostname, port); //for sending requests
-    }*/
-
     public String toString()
     {
         return String.format("Peer %d: %s:%d %s", id, hostname, port, this.HasFile() ? "Has file" : "No file");
     }
 
-    public BitSet getBitField()
+    public Bitfield getBitField()
     {
         return this.bitfield;
     }
 
-    public void setBitfield(BitSet bitfield)
+    public void setBitfield(byte[] bytes)
     {
-        this.bitfield = bitfield;
+        BitSet bits = BitSet.valueOf(bytes);
+        boolean[] bools = new boolean[bytes.length * 8];
+        for (int i = bits.nextSetBit(0); i != -1; i = bits.nextSetBit(i+1)) {
+            bools[i] = true;
+        }
+
+        this.bitfield = new Bitfield(bools);
     }
 
     public void setBitInBitField(int index, boolean value)

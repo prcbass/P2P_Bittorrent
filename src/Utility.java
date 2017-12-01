@@ -64,7 +64,7 @@ public class Utility
 	}
 
 	// returns true if the BitSet 'them' has a 1 in an index that 'us' does not
-	public static boolean shouldBeInterested(BitSet us, BitSet them)
+	public static boolean shouldBeInterested(Bitfield us, Bitfield them)
 	{
 		if (us.length() == 0 || them.length() == 0)
         {
@@ -96,5 +96,13 @@ public class Utility
         output.writeByte(type);
         output.flush();
     }
+
+    public synchronized static void sendMessage(DataOutputStream output, int type, int payload) throws IOException
+	{
+		output.writeInt(1);
+		output.writeByte(type);
+		output.writeInt(payload);
+		output.flush();
+	}
 
 }
