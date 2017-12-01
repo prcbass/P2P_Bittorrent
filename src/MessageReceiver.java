@@ -22,15 +22,10 @@ public class MessageReceiver implements Runnable
     // number of peers (including us) with the complete file
     int finishedPeers = 0;
 
-    MessageReceiver(int myPeerId, int peerId, Socket socket, boolean handshakeSent, CustomLogger logger) throws IOException
+    MessageReceiver(int myPeerId, int peerId, boolean handshakeSent, CustomLogger logger) throws IOException
     {
         this.myPeerId = myPeerId;
         this.peerId = peerId;
-
-        this.input = new DataInputStream(socket.getInputStream());
-
-        this.output = new DataOutputStream(socket.getOutputStream());
-        this.output.flush();
 
         this.logger = logger;
 
@@ -39,6 +34,9 @@ public class MessageReceiver implements Runnable
         for (Peer p : Config.peers.values())
             if (p.HasFile())
                 finishedPeers++;
+
+        this.output = Config.peers.get(peerId).getOutputStream();
+        this.input = Config.peers.get(peerId).getInputStream();
     }
 
     public void run()
@@ -51,8 +49,6 @@ public class MessageReceiver implements Runnable
                 // check if all peers have the complete file
                 if (finishedPeers == Config.peers.size())
                 {
-                    /*for (Peer p : Config.peers.values())
-                        p.GetSocket().close();*/
                     System.out.println("Exiting! We're done.");
                     System.exit(0);
                 }

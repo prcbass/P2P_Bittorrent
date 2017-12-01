@@ -7,10 +7,13 @@ public class Peer
     private final int id;
     private final String hostname;
     private final int port;
-    private Socket socket;
+    //private Socket socket;
     private BitSet bitfield;
     boolean choked;
     boolean interested;
+
+    DataOutputStream outputStream;
+    DataInputStream inputStream;
 
     Peer(int id, String hostname, int port, boolean hasFile, int bitfieldLength) throws IOException
     {
@@ -25,6 +28,24 @@ public class Peer
 
         this.choked = true;
         this.interested = false;
+    }
+
+    public void initStreams(Socket socket) throws IOException
+    {
+        this.outputStream = new DataOutputStream(socket.getOutputStream());
+        this.outputStream.flush();
+
+        this.inputStream = new DataInputStream(socket.getInputStream());
+    }
+
+    public DataOutputStream getOutputStream()
+    {
+        return outputStream;
+    }
+
+    public DataInputStream getInputStream()
+    {
+        return inputStream;
     }
 
     public int GetId()
@@ -52,7 +73,7 @@ public class Peer
         return false;
     }
 
-    public Socket GetSocket()
+    /*public Socket GetSocket()
     {
         return socket;
     }
@@ -60,7 +81,7 @@ public class Peer
     public void OpenSocket() throws IOException
     {
         this.socket = new Socket(hostname, port); //for sending requests
-    }
+    }*/
 
     public String toString()
     {

@@ -52,13 +52,15 @@ class peerProcess
             // we need to make first contact with peers that have a smaller peerId
             if (peerId < myPeerId)
             {
-                Config.peers.get(peerId).OpenSocket();
+                //Config.peers.get(peerId).OpenSocket();
+                Socket sock = new Socket(Config.peers.get(peerId).GetHostname(), Config.peers.get(peerId).GetPort());
+                Config.peers.get(peerId).initStreams(sock);
                 logger.TCPMakeConnection(peerId);
 
                 // make first contact by sending a handshake message
                 HandshakeMessage handshake = new HandshakeMessage(myPeerId);
-                handshake.send(Config.peers.get(peerId).GetSocket());
-                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, Config.peers.get(peerId).GetSocket(), true, logger));
+                handshake.send(Config.peers.get(peerId).getOutputStream());
+                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId,true, logger));
 
                 // spawn a thread that handles all messages received
                 messageReceiver.start();
@@ -68,7 +70,8 @@ class peerProcess
             else if (peerId != myPeerId)
             {
                 logger.TCPIsConnected(peerId);
-                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, listener.accept(), false, logger));
+                Config.peers.get(peerId).initStreams(listener.accept());
+                Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, false, logger));
 
                 // spawn a thread that handles all messages received
                 messageReceiver.start();
