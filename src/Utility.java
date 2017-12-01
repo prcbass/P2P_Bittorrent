@@ -44,7 +44,7 @@ public class Utility
 			numPieces = fileSizeInBytes / pieceSizeInBytes;
 		}
 		
-		return numPieces % 8 != 0 ? numPieces/8 + 1 : numPieces/8;
+		return numPieces;
 	}
 	
 	//gives you byte array with all 0 bytes
