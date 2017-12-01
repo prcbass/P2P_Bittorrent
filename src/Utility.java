@@ -109,7 +109,7 @@ public class Utility
 
     public synchronized static void sendMessage(DataOutputStream output, int type, int payload) throws IOException
 	{
-		output.writeInt(1);
+		output.writeInt(1 + 4);
 		output.writeByte(type);
 		output.writeInt(payload);
 		output.flush();
@@ -117,7 +117,7 @@ public class Utility
 
 	public synchronized static void sendMessage(DataOutputStream output, int type, int index, byte[] payload) throws IOException
     {
-        output.writeInt(1);
+        output.writeInt(1 + 4 + payload.length);
         output.writeByte(type);
         output.writeInt(index);
         output.write(payload);
