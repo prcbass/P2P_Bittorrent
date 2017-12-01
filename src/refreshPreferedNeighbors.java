@@ -20,9 +20,6 @@ public class refreshPreferedNeighbors implements Runnable
         LinkedHashMap<Integer, Double> downloadRates = new LinkedHashMap<>();
         for (int peerId : Config.peers.keySet())
         {
-            if (peerId != myPeerId)
-                System.out.println(Config.peers.get(peerId).getOutputStream().size());
-
             if (Config.peers.get(peerId).isInterested() && peerId != myPeerId)
                 downloadRates.put(peerId, (double)Config.peers.get(peerId).getBytesDownloaded()/Config.getUnchokingInterval());
         }
@@ -30,15 +27,19 @@ public class refreshPreferedNeighbors implements Runnable
         // we have the complete file, choose neighbors randomly
         if (hasFile)
         {
+            System.out.println("DL Rate key size: " + downloadRates.keySet().size());
 
             List<Integer> peers = new ArrayList<Integer>(downloadRates.keySet());
             Collections.shuffle(peers);
+            System.out.println("Creating neighborlist for " + myPeerId + " RANDOMLY");
+            System.out.println("New peers size: " + peers.size());
             return peers.subList(0, neighborCount);
         }
 
         // we don't have the complete file, choose neighbors based on highest download rate
         else
         {
+            System.out.println("Creating neighborlist for " + myPeerId + " BY DOWNLOAD RATE");
             // sort the linked list highest to low - https://stackoverflow.com/questions/12184378/sorting-linkedhashmap
             List<Map.Entry<Integer, Double>> entries = new ArrayList<Map.Entry<Integer, Double>>(downloadRates.entrySet());
             Collections.sort(entries, new Comparator<Map.Entry<Integer, Double>>() {
@@ -52,6 +53,7 @@ public class refreshPreferedNeighbors implements Runnable
                 sortedMap.put(entry.getKey(), entry.getValue());
             }
 
+            System.out.println(sortedMap.keySet());
             return new ArrayList<Integer>(sortedMap.keySet());
         }
     }
@@ -61,8 +63,8 @@ public class refreshPreferedNeighbors implements Runnable
     * */
     public void run()
     {
-
         List<Integer> neighbors = getNeighborList(Config.peers.get(myPeerId).HasFile());
+        logger.changeOfPreferredNeighbors(neighbors);
 
         int unchokeCount = 0;
         for (int peerId : neighbors)
