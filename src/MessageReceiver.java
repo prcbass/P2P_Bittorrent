@@ -231,10 +231,10 @@ public class MessageReceiver implements Runnable
         Config.peers.get(myPeerId).setBitInBitField(pieceIndex, true);
 
         // after writing piece to file, send HAVE msg to everyone else
-        for (int peerId : Config.peers.keySet())
+        for (int pId : Config.peers.keySet())
         {
-            if (peerId != myPeerId)
-                Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.HAVE, pieceIndex);
+            if (pId != myPeerId)
+                Utility.sendMessage(Config.peers.get(pId).getOutputStream(), Message.HAVE, pieceIndex);
         }
 
         logger.downloadingPiece(peerId, pieceIndex, Config.peers.get(myPeerId).getBitField().cardinality());

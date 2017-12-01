@@ -112,6 +112,7 @@ public class Peer
             System.out.println("Peer " + id + " has file");
             return true;
         }
+        System.out.printf("Peer %d does not have file. (%d/%d)\n", id, this.bitfield.cardinality(), this.bitfield.length());
         return false;
     }
 
