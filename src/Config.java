@@ -31,6 +31,16 @@ public class Config
         peers = new LinkedHashMap<Integer, Peer>();
     }
 
+    public static int getOptimisticUnchokingInterval()
+    {
+        return optimisticUnchokingInterval;
+    }
+
+    public static int getUnchokingInterval()
+    {
+        return unchokingInterval;
+    }
+
     public static void initPeers(String peerInfoFile, int myPeerId) throws IOException
     {
         Scanner peerInfo = new Scanner(new FileReader(peerInfoFile));

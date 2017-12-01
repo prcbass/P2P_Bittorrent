@@ -186,8 +186,8 @@ public class MessageReceiver implements Runnable
             sendMessage(Message.NOT_INTERESTED);
         }
 
-        if (Config.peers.get(peerId).HasFile())
-            finishedPeers++;
+        /*if (Config.peers.get(peerId).HasFile())
+            finishedPeers++;*/
     }
 
     public synchronized void sendMessage(int type, byte[] payload) throws IOException
