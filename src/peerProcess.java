@@ -72,8 +72,8 @@ class peerProcess
             // we wait for first contact from peers with a bigger peerId
             else if (peerId != myPeerId)
             {
-                logger.TCPIsConnected(peerId);
                 Config.peers.get(peerId).initStreams(listener.accept());
+                logger.TCPIsConnected(peerId);
                 Thread messageReceiver = new Thread(new MessageReceiver(myPeerId, peerId, false, logger));
 
                 // spawn a thread that handles all messages received
@@ -82,7 +82,7 @@ class peerProcess
         }
 
         ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-        ses.scheduleAtFixedRate(new refreshPreferedNeighbors(Config.getNumberOfPreferredNeighbors(), myPeerId), 0, Config.getUnchokingInterval(), TimeUnit.SECONDS);
-        ses.scheduleAtFixedRate(new refreshOptimisticNeighbor(), 0, Config.getOptimisticUnchokingInterval(), TimeUnit.SECONDS);
+        ses.scheduleAtFixedRate(new refreshPreferedNeighbors(Config.getNumberOfPreferredNeighbors(), myPeerId, logger), 0, Config.getUnchokingInterval(), TimeUnit.SECONDS);
+        ses.scheduleAtFixedRate(new refreshOptimisticNeighbor(logger), 0, Config.getOptimisticUnchokingInterval(), TimeUnit.SECONDS);
     }
 }

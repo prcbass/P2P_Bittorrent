@@ -88,10 +88,12 @@ public class MessageReceiver implements Runnable
                         case Message.INTERESTED:
                             System.out.printf("%d received INTERESTED from %d\n", myPeerId, peerId);
                             Config.peers.get(peerId).setInterested(true);
+                            logger.recievingInterested(peerId);
                             break;
                         case Message.NOT_INTERESTED:
                             System.out.printf("%d received NOT_INTERESTED from %d\n", myPeerId, peerId);
                             Config.peers.get(peerId).setInterested(false);
+                            logger.recievingNotInterested(peerId);
                             break;
                         case Message.HAVE:
                             System.out.printf("%d received HAVE from %d\n", myPeerId, peerId);
@@ -200,6 +202,7 @@ public class MessageReceiver implements Runnable
     public synchronized void HandleUnchokeMsg(/*no payload*/) throws IOException
     {
         Config.peers.get(myPeerId).setChoked(false);
+        logger.unchoking(peerId);
 
         requestNewPiece();
     }
@@ -207,6 +210,7 @@ public class MessageReceiver implements Runnable
     public synchronized void HandleChokeMsg(/*no payload*/) throws IOException
     {
         Config.peers.get(myPeerId).setChoked(true);
+        logger.choking(peerId);
     }
 
     public synchronized void HandleRequestMsg(byte[] payload) throws IOException
@@ -232,6 +236,12 @@ public class MessageReceiver implements Runnable
                 Utility.sendMessage(Config.peers.get(peerId).getOutputStream(), Message.HAVE, pieceIndex);
         }
 
+        logger.downloadingPiece(peerId, pieceIndex, Config.peers.get(myPeerId).getBitField().cardinality());
+
+        
+        if (Config.peers.get(myPeerId).HasFile())
+            logger.completionDownload();
+
         requestNewPiece();
     }
 
@@ -239,14 +249,18 @@ public class MessageReceiver implements Runnable
     {
         int pieceIndex = Utility.byteArrayToInt(payload);
         Config.peers.get(peerId).setBitInBitField(pieceIndex, true);
+        logger.recievingHave(peerId, pieceIndex);
     }
 
     public synchronized void requestNewPiece() throws IOException
     {
         ArrayList<Integer> possiblePieces = Utility.getRequestPieces(Config.peers.get(myPeerId).getBitField(), Config.peers.get(peerId).getBitField());
+
+        // if we don't need anything from this peer sent them a NOT_INTERESTED msg
         if (possiblePieces.size() == 0)
         {
-            System.out.println("NO MORE PIECES LEFT TO REQUEST");
+            System.out.println("Sending NOT interested msg from " + myPeerId + " to " + peerId);
+            Utility.sendMessage(output, Message.NOT_INTERESTED);
             return;
         }
         Random generator = new Random();

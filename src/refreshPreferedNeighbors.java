@@ -6,11 +6,13 @@ public class refreshPreferedNeighbors implements Runnable
     private int neighborCount;
     private int myPeerId;
     private Map<Integer, Double> sortedMap;
+    private CustomLogger logger;
 
-    refreshPreferedNeighbors(int neighborCount, int myPeerId)
+    refreshPreferedNeighbors(int neighborCount, int myPeerId, CustomLogger logger)
     {
         this.neighborCount = neighborCount;
         this.myPeerId = myPeerId;
+        this.logger = logger;
     }
 
     /*
@@ -18,7 +20,7 @@ public class refreshPreferedNeighbors implements Runnable
     * */
     public void run()
     {
-        System.out.println("refreshPreferedNeighbors: ");
+        //System.out.println("refreshPreferedNeighbors: ");
 
         // create linked list of interested peerID/download rate pairs
         LinkedHashMap<Integer, Double> downloadRates = new LinkedHashMap<>();
@@ -30,7 +32,6 @@ public class refreshPreferedNeighbors implements Runnable
             if (Config.peers.get(peerId).isInterested() && peerId != myPeerId)
                 downloadRates.put(peerId, Config.peers.get(peerId).getDownloadRateBytesPerMilisec());
         }
-        System.out.print(downloadRates.size());
 
         // sort the linked list highest to low - https://stackoverflow.com/questions/12184378/sorting-linkedhashmap
         List<Map.Entry<Integer, Double>> entries = new ArrayList<Map.Entry<Integer, Double>>(downloadRates.entrySet());
@@ -39,13 +40,12 @@ public class refreshPreferedNeighbors implements Runnable
                 return -1 * a.getValue().compareTo(b.getValue());
             }
         });
-        System.out.print(entries.size());
+
         sortedMap = new LinkedHashMap<Integer, Double>();
         for (Map.Entry<Integer, Double> entry : entries) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 
-        System.out.println(sortedMap.size());
         int unchokeCount = 0;
         for (int peerId : sortedMap.keySet())
         {
@@ -90,6 +90,8 @@ public class refreshPreferedNeighbors implements Runnable
                 }
             }
         }
+
+        logger.changeOfPreferredNeighbors(sortedMap.keySet());
     }
 }
 

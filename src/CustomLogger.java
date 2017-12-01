@@ -1,6 +1,6 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Set;
 import java.util.Date;
 import java.util.logging.*;
 
@@ -48,19 +48,20 @@ public class CustomLogger
 		logger.info("Peer " + id + " is connected from Peer " + id2 + "\n");
 	}
 	
-	public void changeOfPreferredNeighbors(ArrayList<Peer> neighbors)
+	public void changeOfPreferredNeighbors(Set<Integer> neighbors)
 	{
 		String s = "Peer " + id + " has the preferred neighbors ";
+		Integer[] peers = neighbors.toArray(new Integer[neighbors.size()]);
 		
-		for (int i = 0; i < neighbors.size(); i++)
+		for (int i = 0; i < peers.length; i++)
 		{
-			if (i != neighbors.size() - 1)
+			if (i != peers.length - 1)
 			{
-				s += neighbors.get(i).GetId() + ", ";
+				s += peers[i] + ", ";
 			}
 			else
 			{
-				s += neighbors.get(i).GetId()  + "\n";
+				s += peers[i]  + "\n";
 			}
 		}
 		logger.info(s.toString());

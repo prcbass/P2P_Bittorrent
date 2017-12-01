@@ -3,10 +3,15 @@ import java.util.Random;
 
 public class refreshOptimisticNeighbor implements Runnable
 {
-	public void run()
+	private CustomLogger logger;
+
+    refreshOptimisticNeighbor(CustomLogger logger)
     {
-        System.out.println("refreshOptimisticNeighbor");
-                
+        this.logger = logger;
+    }
+
+    public void run()
+    {
         ArrayList<Integer> chokedAndInterestedPeerIds= new ArrayList<Integer>();
         for(int i = 0; i < Config.peers.size(); i++){
             int id = (int)Config.peers.keySet().toArray()[i];
@@ -23,7 +28,7 @@ public class refreshOptimisticNeighbor implements Runnable
             int index = generator.nextInt(size);
             int optimisticNeighbor = (int)(chokedAndInterestedPeerIds.toArray()[index]);
             Config.setOptimisticNeighbor(optimisticNeighbor);
-            System.out.println("PeerID " + optimisticNeighbor + " is the optimistic neighbor Id");
+            logger.changeOfOptimisticallyUnchokedNeighbor(optimisticNeighbor);
 
         }
         
